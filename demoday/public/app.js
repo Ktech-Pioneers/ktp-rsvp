@@ -395,83 +395,82 @@ function createGlobe(canvas, opts = {}) {
     ctx.restore();
     if (opts.partners !== false && HERO_LOGOS === 'tiles') drawTiles(t, mobile);
   }
-  // ---- 선정팀 로고 자리: 중앙 문구 좌우에 흩어진 10자리(카드 배경 없음), 카드마다 제각각 다음 팀 로고로 밀려 바뀐다 ----
+  // ---- 선정팀 로고 자리: 중앙 문구 좌우에 흩어진 10자리(카드 배경 없음) ----
   // [가로 위치, 세로 위치(화면 비율), 로고 자리 너비, 높이(px, 1440 기준)]
   const TILE_D = [
-    [0.085, 0.27, 150, 84], [0.19, 0.37, 120, 66], [0.1, 0.5, 176, 98], [0.2, 0.61, 112, 62], [0.09, 0.73, 140, 78],
-    [0.91, 0.26, 160, 88], [0.81, 0.38, 120, 66], [0.9, 0.5, 136, 76], [0.8, 0.62, 150, 84], [0.91, 0.74, 120, 66],
+    [0.09, 0.4, 150, 84], [0.2, 0.48, 120, 66], [0.1, 0.57, 176, 98], [0.21, 0.66, 112, 62], [0.09, 0.75, 140, 78],
+    [0.91, 0.39, 160, 88], [0.8, 0.48, 120, 66], [0.9, 0.57, 136, 76], [0.79, 0.66, 150, 84], [0.91, 0.76, 120, 66],
   ];
   const TILE_M = [
     [0.13, 0.4, 92, 52], [0.17, 0.52, 80, 46], [0.12, 0.64, 88, 50],
     [0.87, 0.38, 88, 50], [0.83, 0.51, 80, 46], [0.88, 0.63, 92, 52],
   ];
-  const rand = (a, b) => a + Math.random() * (b - a);
-  const ease2 = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-  const tiles = Array.from({ length: 10 }, (_, i) => ({ i, side: 0, swapT: null, nextAt: 0 }));
+  // 로고 10개는 옅은 회색으로 떠 있다가, 다음 10개로 같은 자리에서 스르륵 교차하며 바뀐다.
+  // 인트로: 지구가 펼쳐질 때 지구 중심에서 좌우 번갈아 촤라라락 퍼져 나와 자리를 잡는다.
+  const TILE_CYCLE = 6; // 한 묶음이 보이는 시간(초)
+  const TILE_FADE = 1.4; // 교차 전환 시간
+  const TILE_GRAY = 0.55; // 흰 로고의 불투명도 → 검은 배경 위에서 옅은 회색
+  const TILE_SIZE = 0.65; // 로고 크기 배율
   let tilesT0 = null;
   function drawTiles(t, mobile) {
     const n = PARTNERS.length;
     if (!n) return;
     const now = t / 1000;
     if (tilesT0 === null) {
-      if (state.open < 0.9) return; // 지구가 열린 뒤 카드가 들어온다
+      if (state.open < 0.06) return; // 지구가 펼쳐지기 시작할 때 함께
       tilesT0 = now;
-      tiles.forEach((T) => (T.nextAt = now + rand(2.8, 6.5)));
     }
     const layout = mobile ? TILE_M : TILE_D;
     const k = mobile ? 1 : Math.max(0.72, Math.min(1.12, w / 1440));
-    const half = Math.ceil(n / 2);
+    const tau = now - tilesT0;
+    const cycle = Math.floor(tau / TILE_CYCLE);
+    const toSwap = TILE_CYCLE - (tau - cycle * TILE_CYCLE); // 다음 전환까지 남은 시간
+    let mix = toSwap < TILE_FADE ? 1 - toSwap / TILE_FADE : 0; // 0 = 지금 로고, 1 = 다음 로고
+    mix = mix * mix * (3 - 2 * mix);
+    const per = layout.length;
+    const half = Math.ceil(per / 2);
+    const gx = w * 0.5, gy = h * (opts.cy ?? 0.6); // 지구 중심
     ctx.save();
-    ctx.globalAlpha = state.alpha;
     layout.forEach(([fx, fy, tw0, th0], idx) => {
-      const T = tiles[idx];
       const tw = tw0 * k, th = th0 * k;
-      // 등장: 바깥쪽에서 안으로 미끄러지며 나타난다(카드마다 시차)
-      const e = Math.min(1, Math.max(0, (now - tilesT0 - idx * 0.11) / 1.1));
-      if (e <= 0) return;
-      const ee = 1 - Math.pow(1 - e, 3);
-      const dir = fx < 0.5 ? -1 : 1;
-      const cx = fx * w + (reduced ? 0 : dir * 60 * (1 - ee));
-      const cy = fy * h + Math.sin(now * 0.6 + idx * 1.7) * 2.5; // 아주 살짝 둥실
-      // 교체 타이밍(카드마다 제각각)
-      if (T.swapT === null && now >= T.nextAt) T.swapT = now;
-      let prog = 0;
-      if (T.swapT !== null) {
-        prog = Math.min(1, (now - T.swapT) / 0.95);
-        if (prog >= 1) {
-          T.side ^= 1;
-          T.swapT = null;
-          T.nextAt = now + rand(3.2, 6.8);
-          prog = 0;
-        }
+      let cx = fx * w;
+      let cy = fy * h + Math.sin(now * 0.6 + idx * 1.7) * 2; // 아주 살짝 둥실
+      const order = (idx % half) * 2 + (idx >= half ? 1 : 0);
+      const st = tau - 0.2 - order * 0.09;
+      if (st <= 0 && !reduced) return;
+      const sp = reduced ? 1 : Math.min(1, st / 1.5);
+      const e = sp >= 1 ? 1 : 1 - Math.pow(2, -10 * sp);
+      cx = gx + (cx - gx) * e;
+      cy = gy + (cy - gy) * e;
+      const sc = 0.3 + 0.7 * e;
+      const appear = Math.min(1, sp * 5);
+      // 퍼져 나갈 때 지구 쪽으로 남는 은은한 빛꼬리
+      if (e < 0.98 && !reduced) {
+        const d = Math.hypot(gx - cx, gy - cy) || 1;
+        const L = Math.min(d, 40 + 160 * (1 - e));
+        const ux = (gx - cx) / d, uy = (gy - cy) / d;
+        const g = ctx.createLinearGradient(cx, cy, cx + ux * L, cy + uy * L);
+        g.addColorStop(0, `rgba(200,195,255,${0.4 * (1 - e) * state.alpha})`);
+        g.addColorStop(1, 'rgba(140,120,255,0)');
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + ux * L, cy + uy * L);
+        ctx.stroke();
       }
-      const team = (side) => PARTNERS[(idx + side * half) % n];
-      ctx.globalAlpha = state.alpha * ee;
-      // 카드 배경 없이 로고만 떠 있다. 교체는 옆으로 밀리며 흐려졌다 나타난다.
-      const drawLogo = (p, dx, a) => {
-        if (!p.img.complete || !p.img.naturalWidth || a <= 0) return;
+      const drawLogo = (p, a) => {
+        if (!p.img.complete || !p.img.naturalWidth || a <= 0.002) return;
         let [sw, sh] = logoSize(p, false);
-        const f = Math.min((tw * 0.9) / sw, (th * 0.5) / sh, (tw / 150) * 1.45);
+        const f = Math.min((tw * 0.9) / sw, (th * 0.5) / sh, (tw / 150) * 1.45) * TILE_SIZE * sc;
         sw *= f;
         sh *= f;
-        ctx.globalAlpha = state.alpha * ee * a;
-        if (!mobile) {
-          ctx.shadowColor = 'rgba(170,160,255,0.7)';
-          ctx.shadowBlur = 10;
-        }
-        ctx.drawImage(p.img, cx - sw / 2 + dx, cy - sh / 2, sw, sh);
-        ctx.shadowBlur = 0;
+        ctx.globalAlpha = state.alpha * TILE_GRAY * appear * a;
+        ctx.drawImage(p.img, cx - sw / 2, cy - sh / 2, sw, sh);
       };
-      if (prog > 0) {
-        const q = ease2(prog);
-        if (reduced) {
-          drawLogo(team(T.side), 0, 1 - q);
-          drawLogo(team(T.side ^ 1), 0, q);
-        } else {
-          drawLogo(team(T.side), -q * tw * 0.45, Math.max(0, 1 - q * 1.6));
-          drawLogo(team(T.side ^ 1), (1 - q) * tw * 0.45, Math.max(0, q * 1.6 - 0.6));
-        }
-      } else drawLogo(team(T.side), 0, 1);
+      drawLogo(PARTNERS[(cycle * per + idx) % n], 1 - mix);
+      drawLogo(PARTNERS[((cycle + 1) * per + idx) % n], mix);
     });
     ctx.restore();
   }
