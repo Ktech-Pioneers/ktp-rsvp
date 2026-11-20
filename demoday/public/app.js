@@ -433,8 +433,10 @@ function createGlobe(canvas, opts = {}) {
     ctx.save();
     layout.forEach(([fx, fy, tw0, th0], idx) => {
       const tw = tw0 * k, th = th0 * k;
-      let cx = fx * w;
-      let cy = fy * h + Math.sin(now * 0.6 + idx * 1.7) * 2; // 아주 살짝 둥실
+      // 제자리에서 둥둥: 로고마다 속도·위상이 다른 느린 흔들림(세로 ±6px, 가로 ±3px)
+      const bob = reduced ? 0 : 1;
+      let cx = fx * w + Math.sin(now * (0.33 + (idx % 4) * 0.04) + idx * 2.3) * 3 * bob;
+      let cy = fy * h + Math.sin(now * (0.5 + (idx % 3) * 0.07) + idx * 1.7) * 6 * bob;
       const order = (idx % half) * 2 + (idx >= half ? 1 : 0);
       const st = tau - 0.2 - order * 0.09;
       if (st <= 0 && !reduced) return;
