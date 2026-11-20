@@ -409,7 +409,7 @@ function createGlobe(canvas, opts = {}) {
   // 인트로: 지구가 펼쳐질 때 지구 중심에서 좌우 번갈아 촤라라락 퍼져 나와 자리를 잡는다.
   const TILE_CYCLE = 6; // 한 묶음이 보이는 시간(초)
   const TILE_FADE = 1.4; // 교차 전환 시간
-  const TILE_GRAY = 0.55; // 흰 로고의 불투명도 → 검은 배경 위에서 옅은 회색
+  const TILE_GRAY = 0.62; // 흰 로고의 불투명도 → 검은 배경 위에서 옅은 회색
   const TILE_SIZE = 0.65; // 로고 크기 배율
   let tilesT0 = null;
   function drawTiles(t, mobile) {
