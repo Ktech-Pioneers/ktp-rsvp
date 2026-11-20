@@ -220,8 +220,11 @@ main > section { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
 .timetable[hidden] { display: none; }
 
 .letter { text-align: center; padding: clamp(64px, 9vw, 100px) 0 clamp(48px, 6vw, 72px); }
-.letter__body { margin: 26px auto 0; max-width: 680px; font-size: clamp(18px, 2.3vw, 24px); line-height: 1.85; font-weight: 400; color: var(--ink-2); }
+.letter__body { margin: 26px auto 0; max-width: 820px; font-size: clamp(18px, 2.3vw, 24px); line-height: 1.85; font-weight: 400; color: var(--ink-2); }
 .letter__body b { color: #fff; }
+.letter__para { display: block; }
+.letter__para + .letter__para { margin-top: 1.4em; }
+.letter__body small { font-size: 0.68em; color: var(--ink-3); white-space: nowrap; }
 
 .block {
   display: grid;
@@ -759,7 +762,7 @@ input:focus, textarea:focus { border-color: var(--violet-2); background: rgba(10
 :root {
   /* 기본 글꼴은 프리텐다드. 라벨·숫자도 같은 글꼴에 고정폭 숫자만 켠다. */
   --mono: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --sky: #8fb4ff;
+  --sky: #6b5cff; /* 2026-11-20: 소제목·라벨 보라색으로 (RSVP와 통일) */
   --line: rgba(130, 150, 255, 0.17);
   --line-2: rgba(130, 150, 255, 0.32);
 }
@@ -788,7 +791,7 @@ body::before {
   height: 7px;
   background:
     linear-gradient(90deg, transparent, var(--sky)) center / 100% 1px no-repeat,
-    repeating-linear-gradient(90deg, rgba(143, 180, 255, 0.55) 0 1px, transparent 1px 8px) bottom / 100% 4px no-repeat;
+    repeating-linear-gradient(90deg, rgba(107, 92, 255, 0.6) 0 1px, transparent 1px 8px) bottom / 100% 4px no-repeat;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000);
   mask-image: linear-gradient(90deg, transparent, #000);
 }
@@ -801,24 +804,18 @@ body::before {
 .btn--primary:hover { box-shadow: 0 0 0 1px rgba(180, 200, 255, 0.65) inset, 0 16px 50px -10px rgba(80, 110, 255, 1); }
 
 /* ---------- hero ---------- */
-.hero__event {
-  font-size: clamp(34px, 9vw, 92px);
-  letter-spacing: 0.02em;
-  background: linear-gradient(180deg, #ffffff 0%, #c9d6ff 38%, #8a9bff 70%, #7c69ff 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  filter: drop-shadow(0 0 28px rgba(90, 110, 255, 0.35));
+/* 헤더(INVITATION·타이틀·날짜)는 프리데모데이 RSVP와 통일 — 기본 규칙(위쪽) 그대로 사용 */
+.hero__invite { font-family: var(--display); letter-spacing: 0.3em; color: var(--violet-2); }
+.hero__invite::before, .hero__invite::after {
+  width: 36px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--violet-2));
+  -webkit-mask-image: none; mask-image: none;
 }
-.step-3 .hero__event { letter-spacing: 0.02em; }
-.hero__logo { font-size: clamp(13px, 2.6vw, 22px); letter-spacing: 0.14em; color: rgba(235, 238, 255, 0.92); text-shadow: none; }
-.hero__title { gap: clamp(10px, 1.6vw, 16px); }
 .hero__tagline { font-size: clamp(14px, 1.7vw, 17px); text-shadow: 0 2px 18px #000; }
 .hero__inner { padding-top: 20px; }
-.hero__when strong { font-family: var(--mono); font-weight: 500; letter-spacing: 0.08em; }
-.hero__when span { font-weight: 500; }
 
 /* HUD */
-.hud, .countdown, .hero__when, .pass__code { font-variant-numeric: tabular-nums; }
+.hud, .countdown, .pass__code { font-variant-numeric: tabular-nums; }
 .hud { position: absolute; inset: 18px; pointer-events: none; z-index: 0; font: 500 10.5px/1.5 var(--mono); letter-spacing: 0.14em; color: rgba(170, 185, 255, 0.6); opacity: 0; transition: opacity 1.4s var(--ease) 0.3s; }
 .step-5 .hud { opacity: 1; }
 .hud__c { position: absolute; width: 18px; height: 18px; border: 0 solid rgba(143, 170, 255, 0.45); }
@@ -843,26 +840,9 @@ body::before {
 .countdown b { font-size: 20px; font-weight: 500; color: #fff; font-variant-numeric: tabular-nums; }
 .countdown small { margin-left: 2px; font-size: 10px; color: var(--ink-3); }
 
-/* ---------- info → 운항 정보판 느낌 ---------- */
-.info {
-  position: relative;
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(25, 35, 110, 0.22), rgba(8, 10, 30, 0.55));
-}
-.info::before {
-  content: 'FLIGHT INFORMATION';
-  position: absolute;
-  left: 22px;
-  top: -9px;
-  padding: 0 10px;
-  font: 500 10px/18px var(--mono);
-  letter-spacing: 0.24em;
-  color: var(--sky);
-  background: #000;
-}
+/* info 카드: 프리데모데이 RSVP 디자인 그대로 (2026-11-20, 운항 정보판 스타일 제거) */
 
 /* 타임테이블 시간 칸 */
-.timetable tbody th { font-family: var(--mono); font-weight: 500; }
 .timetable thead th { color: var(--sky); font-family: var(--mono); font-weight: 500; letter-spacing: 0.1em; }
 
 /* 폼 */
@@ -904,3 +884,16 @@ input:focus, textarea:focus { border-color: #6f8cff; background: rgba(80, 110, 2
 }
 .hero__inner { max-width: 1100px; }
 .hero__event { white-space: nowrap; }
+/* 히어로 장소: 한글 줄 + 영문 줄 (2026-11-20) */
+.hero__when .hero__venue-ko { margin-top: 8px; color: var(--ink); }
+.hero__when .hero__venue-ko + span { margin-top: 2px; }
+/* 타임테이블 프로그램 칸 (2026-11-20) */
+.timetable td.tt-program span { margin-top: 0; }
+.timetable td.tt-program span + span { margin-top: 2px; }
+/* 글자 크기 한 단계 줄임 — 프리데모데이 분과 칸의 제목/설명 비율로 */
+@media (min-width: 641px) {
+  .timetable th, .timetable td { padding-top: 20px; padding-bottom: 20px; }
+  .timetable tbody th { font-size: 16px; }
+  .timetable td strong { font-size: 17px; }
+  .timetable td span { font-size: 14px; }
+}
