@@ -61,6 +61,25 @@ function fill() {
     .map((para) => `<span class="letter__para">${para.split('\n').join(' <br />')}</span>`)
     .join('');
 
+  // 선정팀 로고 띠(모바일 전용). 로고마다 비율이 달라 보이는 면적이 비슷해지도록 높이를 개별 계산.
+  const logo = (t) => (t.logo ? `<img class="team-logo" src="/assets/teams/${t.logo}?v=3" alt="" data-scale="${t.scale || 1}" />` : '');
+  const pill = (t) => `<span>${logo(t)}<em>${t.name}</em></span>`;
+  const half = Math.ceil(event.teams.length / 2);
+  const a = event.teams.slice(0, half).map(pill).join('');
+  const b = event.teams.slice(half).map(pill).join('');
+  $('#marqueeA').innerHTML = (a + a).repeat(2);
+  $('#marqueeB').innerHTML = (b + b).repeat(2);
+  if (!event.teams.length) $('#pioneers').remove();
+  document.querySelectorAll('.team-logo').forEach((img) => {
+    const size = () => {
+      const ratio = img.naturalWidth / img.naturalHeight || 4;
+      const k = Number(img.dataset.scale) || 1;
+      const h = Math.min(48, Math.sqrt(3400 / ratio) * k, (210 * k) / ratio);
+      img.style.height = `${h.toFixed(1)}px`;
+    };
+    img.complete ? size() : img.addEventListener('load', size, { once: true });
+  });
+
   // form groups
   const letters = 'ABCDEFG';
   if (event.sessions.length) {
@@ -369,7 +388,7 @@ function createGlobe(canvas, opts = {}) {
     drawOrbit(R, clock, o, true);
     if (opts.partners !== false && HERO_LOGOS === 'dive') drawPartners(t, R, mobile, rot);
     ctx.restore();
-    if (opts.partners !== false && HERO_LOGOS === 'tiles') drawTiles(t, mobile);
+    if (opts.partners !== false && HERO_LOGOS === 'tiles' && !mobile) drawTiles(t, mobile); // 모바일은 히어로 로고 없음(아래 로고 띠로 대신)
   }
   // ---- 선정팀 로고 자리: 중앙 문구 좌우에 흩어진 10자리(카드 배경 없음) ----
   // [가로 위치, 세로 위치(화면 비율), 로고 자리 너비, 높이(px, 1440 기준)]
@@ -822,6 +841,11 @@ function startHud() {
 }
 
 /* ================= boot ================= */
+// 항상 맨 위(히어로)에서 시작: 주소에 #rsvp 등이 남아 있거나 브라우저가 이전 스크롤 위치를 되살려
+// 모바일에서 신청 폼까지 바로 내려가 버리는 것을 막는다. 선정팀 상세(#team/...)는 그대로 둔다.
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+if (location.hash && !location.hash.startsWith('#team/')) history.replaceState(null, '', location.pathname + location.search);
+scrollTo(0, 0);
 fill();
 startHud();
 const orb = createGlobe($('#orb'));

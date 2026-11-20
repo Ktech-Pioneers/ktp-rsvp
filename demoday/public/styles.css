@@ -898,3 +898,8 @@ input:focus, textarea:focus { border-color: #6f8cff; background: rgba(80, 110, 2
   .timetable td strong { font-size: 17px; }
   .timetable td span { font-size: 14px; }
 }
+
+/* 선정팀 로고 띠는 모바일에서만(PC 는 히어로 지구 양옆에 로고가 있다) */
+@media (min-width: 761px) {
+  .pioneers { display: none; }
+}

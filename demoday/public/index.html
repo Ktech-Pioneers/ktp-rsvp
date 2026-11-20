@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=panchang@500,600,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
-  <link rel="stylesheet" href="/styles.css?v=dd10" />
+  <link rel="stylesheet" href="/styles.css?v=dd11" />
 </head>
 <body class="is-intro">
   <canvas id="stars" aria-hidden="true"></canvas>
@@ -100,6 +100,12 @@
     <!-- ===== FINALISTS (분과별 선정팀 카드) ===== -->
     <section class="finalists reveal" id="finalists">
       <div class="finalists__divisions" id="finalistsGrid"></div>
+    </section>
+
+    <!-- ===== PIONEERS (로고 띠) — 모바일에서만 보인다(PC 는 히어로에 로고가 있음) ===== -->
+    <section class="pioneers reveal" id="pioneers">
+      <div class="marquee" aria-hidden="true"><div class="marquee__track" id="marqueeA"></div></div>
+      <div class="marquee marquee--rev" aria-hidden="true"><div class="marquee__track" id="marqueeB"></div></div>
     </section>
 
     <!-- ===== RSVP FORM ===== -->
@@ -256,7 +262,7 @@
     </div>
   </div>
 
-  <script type="module" src="/app.js?v=dd15"></script>
+  <script type="module" src="/app.js?v=dd16"></script>
   <script type="module" src="/finalists.js?v=dd3"></script>
 </body>
 </html>
