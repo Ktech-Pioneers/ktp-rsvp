@@ -409,8 +409,8 @@ function createGlobe(canvas, opts = {}) {
     ctx.save();
     layout.forEach(([fx, fy, tw0, th0], idx) => {
       const tw = tw0 * k, th = th0 * k;
-      // 제자리에서 둥둥: 로고마다 속도·위상이 다른 느린 흔들림(세로 ±6px, 가로 ±3px)
-      const bob = reduced ? 0 : 1;
+      // 제자리에서 둥둥(PC만): 로고마다 속도·위상이 다른 느린 흔들림(세로 ±6px, 가로 ±3px)
+      const bob = reduced || mobile ? 0 : 1; // 모바일에서는 둥둥 움직임 없이 고정
       let cx = fx * w + Math.sin(now * (0.33 + (idx % 4) * 0.04) + idx * 2.3) * 3 * bob;
       let cy = fy * h + Math.sin(now * (0.5 + (idx % 3) * 0.07) + idx * 1.7) * 6 * bob;
       const order = (idx % half) * 2 + (idx >= half ? 1 : 0);
