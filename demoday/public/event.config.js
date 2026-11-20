@@ -37,7 +37,7 @@ export default {
   time: '',
   // 행사 정보 카드(DATE)에만 쓰는 표기. 비워두면 date·dateKo 로 만든다.
   infoDate: '2026.12.10.(THU)',
-  infoDateSub: '13:00~17:00',
+  infoDateSub: '13:30~17:30',
   venue: 'Grand Mercure Imperial Palace 7F',
   // 히어로 날짜 아래 한글 장소 줄(영문 venue 위에 표시). 2026-11-20 변경.
   venueNameKo: '그랜드머큐어 임페리얼팰리스 7층',
