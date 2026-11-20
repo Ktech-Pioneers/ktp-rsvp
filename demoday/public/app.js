@@ -60,20 +60,6 @@ function fill() {
     .split(/\n\n+/)
     .map((para) => `<span class="letter__para">${para.split('\n').join(' <br />')}</span>`)
     .join('');
-  const logo = (t, cls = '') =>
-    t.logo ? `<img class="${cls}" src="/assets/teams/${t.logo}?v=3" alt="" data-scale="${t.scale || 1}" />` : '';
-  const pill = (t) => `<span>${logo(t, 'team-logo')}<em>${t.name}</em></span>`;
-  const half = Math.ceil(event.teams.length / 2);
-  const a = event.teams.slice(0, half).map(pill).join('');
-  const b = event.teams.slice(half).map(pill).join('');
-  $('#marqueeA').innerHTML = (a + a).repeat(2);
-  $('#marqueeB').innerHTML = (b + b).repeat(2);
-  if (!event.teams.length) $('#pioneers').remove();
-  if (event.teamsLink) {
-    $('#teamsLink').href = event.teamsLink.href;
-    $('#teamsLink').textContent = event.teamsLink.label;
-    $('#teamsLink').hidden = false;
-  }
 
   // form groups
   const letters = 'ABCDEFG';
@@ -96,16 +82,6 @@ function fill() {
       .map((m) => `<label class="chip"><input type="radio" name="matching" value="${m}" /><span>${m}</span></label>`)
       .join('');
   }
-  // 로고마다 가로세로 비율이 달라서, 눈에 보이는 면적이 비슷해지도록 높이를 개별 계산한다.
-  document.querySelectorAll('.team-logo').forEach((img) => {
-    const size = () => {
-      const ratio = img.naturalWidth / img.naturalHeight || 4;
-      const k = Number(img.dataset.scale) || 1;
-      const h = Math.min(48, Math.sqrt(3400 / ratio) * k, (210 * k) / ratio);
-      img.style.height = `${h.toFixed(1)}px`;
-    };
-    img.complete ? size() : img.addEventListener('load', size, { once: true });
-  });
   [...document.querySelectorAll('.group:not([hidden]) .num')].forEach((n, i) => (n.textContent = letters[i]));
 
   const pv = event.privacy;
