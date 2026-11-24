@@ -146,6 +146,20 @@ export default {
   // 상단 오른쪽 작은 링크(KTP 홈페이지). 비워두면(null) 숨김. 2026-11-24 클라이언트 요청.
   homepage: { label: 'KTP 홈페이지', href: 'https://ktechpioneers.com/' },
 
+  // 참가자 경품 — 선정팀 카드와 신청서 사이에 보인다. 비워두면(null) 숨김. 2026-11-24 클라이언트 요청.
+  // img 는 public/assets/prizes/ 의 이미지 파일명(배경 없는 PNG). photo: true 면 사진을 칸에 꽉 채운다(호텔).
+  // img 를 비워두면 선 아이콘(icon: watch·hotel·speaker·gift)이 대신 보인다.
+  prizes: {
+    note: '행사 마지막 순서(17:30~)에\n참가자 대상 경품 추첨이 진행됩니다.',
+    items: [
+      { brand: 'SAMSUNG', name: '갤럭시 워치9', count: 1, icon: 'watch', img: 'galaxy-watch9.png?v=3' },
+      { brand: 'LG', name: '엑스붐 블루투스 스피커', count: 2, icon: 'speaker', img: 'lg-xboom.png?v=2' },
+      // stack: true → 같은 카드 이미지 두 장을 겹쳐 보이고, 호버하면 살짝 벌어진다(해비치 멤버십 카드, 공식 사이트 이미지).
+      { brand: 'HYUNDAI', name: '해비치 호텔 숙박·식사권(2인)', count: 2, icon: 'hotel', img: 'haevichi-card.jpg?v=4', stack: true },
+      { brand: 'AMOREPACIFIC', name: '오설록 상품권', count: 10, icon: 'gift', img: 'osulloc-giftcard.png?v=1' },
+    ],
+  },
+
   links: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/showcase/k-tech-pioneers/' },
     { label: 'Instagram', href: 'https://www.instagram.com/ktechpioneers/' },

@@ -115,6 +115,34 @@ function fill() {
     $('#homeLink').hidden = false;
   }
 
+  if (event.prizes?.items?.length) {
+    const ICONS = {
+      watch: '<rect x="7" y="6" width="10" height="12" rx="3"/><path d="M9 6V3h6v3M9 18v3h6v-3M12 10v2.5l1.5 1"/>',
+      hotel: '<path d="M3 19V7M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11.5" r="1.8"/>',
+      speaker: '<rect x="5" y="3" width="14" height="18" rx="4"/><circle cx="12" cy="14" r="3.5"/><circle cx="12" cy="7.5" r="1"/>',
+      gift: '<rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M3 9h18M12 9v11M12 9c-1.5-3-5-4-5-1.5S10 9 12 9c2 0 5 1 5-1.5S13.5 6 12 9"/>',
+    };
+    $('#prizesNote').textContent = event.prizes.note || '';
+    $('#prizesGrid').innerHTML = event.prizes.items
+      .map((p) => `<li class="prize">
+        <div class="prize__media${p.photo ? ' prize__media--photo' : ''}${p.stack ? ' prize__media--stack' : ''}">
+          <i class="prize__spark" aria-hidden="true"></i><i class="prize__spark" aria-hidden="true"></i><i class="prize__spark" aria-hidden="true"></i>${
+          p.img && p.stack
+            ? `<span class="prize__cards"><img class="prize__card prize__card--back" src="/assets/prizes/${p.img}" alt="" loading="lazy" decoding="async" /><img class="prize__card" src="/assets/prizes/${p.img}" alt="" loading="lazy" decoding="async" /></span>`
+            : p.img
+            ? `<img src="/assets/prizes/${p.img}" alt="" loading="lazy" decoding="async" />`
+            : `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[p.icon] || ICONS.gift}</svg>`
+        }</div>
+        <div class="prize__body">
+          <span class="prize__brand">${p.brand}</span>
+          <strong class="prize__name">${p.name}</strong>
+          <span class="prize__count">${p.count}명</span>
+        </div>
+      </li>`)
+      .join('');
+    $('#prizes').hidden = false;
+  }
+
   $('#links').innerHTML = event.links
     .map((l) => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`)
     .join('');
