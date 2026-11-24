@@ -184,9 +184,9 @@ fetch('/assets/notion/teams.json?v=3')
       ...d,
       groups: d.groups.map((g) => ({ ...g, teams: g.teams.map((s) => bySlug[s]).filter(Boolean) })),
     }));
-    // 이전·다음 팀 이동도 분과 순서를 따른다. 분과에 안 넣은 팀은 맨 뒤에 붙는다.
+    // 이전·다음 팀 이동도 분과 순서를 따른다. 분과(본선 진출팀)에 안 넣은 팀은 보여주지 않는다.
     const listed = divisions.flatMap((d) => d.groups.flatMap((g) => g.teams));
-    teams = [...listed, ...data.filter((t) => !listed.includes(t))];
+    teams = listed.length ? listed : data;
     const draw = () => {
       const wide = WIDE.matches;
       grid.innerHTML = divisions.length

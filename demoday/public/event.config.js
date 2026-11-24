@@ -73,7 +73,22 @@ export default {
   // 선정팀 — 로고 띠와 "관심 있는 참가팀" 선택지에 쓰인다. 순서는 노션 「1기 선정팀」과 같게 둔다.
   // logo 는 public/assets/teams/ 의 흰색 로고. scale 은 눈으로 봤을 때 크기가 비슷해 보이도록 하는 개별 보정값.
   // 선정팀 카드·상세 내용은 노션에서 가져온 public/assets/notion/teams.json 을 쓴다(finalists.js).
+  // 2026-11-24 본선 진출 10개팀만(분야 순서: 피지컬 AI · 산업용 AI | 바이오·헬스케어 · 미디어·커머스).
   teams: [
+    { name: 'Contoro Robotics', logo: 'contoro.png', scale: 1.25 },
+    { name: 'OpenGraph Labs', logo: 'opengraph-labs.png', scale: 1.08 },
+    { name: 'SECA', logo: 'seca.png', scale: 1.05 },
+    { name: 'Linqalpha', logo: 'linqalpha.png', scale: 0.95 },
+    { name: 'Pinta AI', logo: 'pinta-ai.png' },
+    { name: 'CyrenConnect', logo: 'cyrencare.png' },
+    { name: 'iQ Surgical', logo: 'iq-surgical.png', scale: 0.62 },
+    { name: 'Roblossom', logo: 'roblossom.png', scale: 1.3 },
+    { name: 'Skinseoul Lab', logo: 'skinseoullab.png', scale: 1.2 },
+    { name: 'Trxbx', logo: 'trxbx.png' },
+  ],
+  // 히어로 로고(PC)와 모바일 로고 띠에는 1기 선정팀 20개사를 모두 보여준다(2026-11-24 요청).
+  // 비워두면 위 teams(본선 10팀)를 쓴다. 이름은 노션 변경 이름(CyrenConnect·Roblossom·Skinseoul Lab) 기준.
+  heroTeams: [
     { name: 'Contoro Robotics', logo: 'contoro.png', scale: 1.25 },
     { name: 'SECA', logo: 'seca.png', scale: 1.05 },
     { name: 'OpenGraph Labs', logo: 'opengraph-labs.png', scale: 1.08 },
@@ -106,11 +121,12 @@ export default {
     {
       name: '',
       groups: [
+        // 2026-11-24 본선 진출 10개팀. PC 1줄: 피지컬 AI 3 + 산업용 AI 2 / 2줄: 바이오·헬스케어 3 + 미디어·커머스 2
+        // slug 는 노션 페이지 주소 그대로(CyrenCare=CyrenConnect, K-ATR=Roblossom, SkinSeoulLab=Skinseoul Lab — 2026-11-24 노션에서 이름 변경)
         { field: '피지컬 AI', teams: ['Contoro-Robotics', 'OpenGraph-Labs', 'SECA'] },
-        { field: '산업용 AI', teams: ['BizCrush', 'Linqalpha', 'Pen-AI-SMT-Smart-Manufacturing-Team', 'Pinta-AI', 'SERiD-AI'] },
-        { field: '우주·항공', teams: ['Surrey-Space-Solar', 'WayFinder-Space'] },
-        { field: '바이오·헬스케어', teams: ['Celuragen-Therapeutics', 'CyrenCare', 'iQ-Surgical', 'K-ATR'] },
-        { field: '미디어·커머스', teams: ['aix', 'DocentPro', 'KINZ', 'SkinSeoulLab', 'Storika', 'Trxbx'] },
+        { field: '산업용 AI', teams: ['Linqalpha', 'Pinta-AI'] },
+        { field: '바이오·헬스케어', teams: ['CyrenCare', 'iQ-Surgical', 'K-ATR'] },
+        { field: '미디어·커머스', teams: ['SkinSeoulLab', 'Trxbx'] },
       ],
     },
   ],

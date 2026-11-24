@@ -64,12 +64,13 @@ function fill() {
   // 선정팀 로고 띠(모바일 전용). 로고마다 비율이 달라 보이는 면적이 비슷해지도록 높이를 개별 계산.
   const logo = (t) => (t.logo ? `<img class="team-logo" src="/assets/teams/${t.logo}?v=3" alt="" data-scale="${t.scale || 1}" />` : '');
   const pill = (t) => `<span>${logo(t)}<em>${t.name}</em></span>`;
-  const half = Math.ceil(event.teams.length / 2);
-  const a = event.teams.slice(0, half).map(pill).join('');
-  const b = event.teams.slice(half).map(pill).join('');
+  const strip = event.heroTeams?.length ? event.heroTeams : event.teams; // 로고 띠: 선정팀 20개사
+  const half = Math.ceil(strip.length / 2);
+  const a = strip.slice(0, half).map(pill).join('');
+  const b = strip.slice(half).map(pill).join('');
   $('#marqueeA').innerHTML = (a + a).repeat(2);
   $('#marqueeB').innerHTML = (b + b).repeat(2);
-  if (!event.teams.length) $('#pioneers').remove();
+  if (!strip.length) $('#pioneers').remove();
   document.querySelectorAll('.team-logo').forEach((img) => {
     const size = () => {
       const ratio = img.naturalWidth / img.naturalHeight || 4;
@@ -126,9 +127,9 @@ const HUBS = [
   ['SFO', 37.77, -122.42], ['BOS', 42.36, -71.06], ['NYC', 40.71, -74.0], ['YYZ', 43.65, -79.38],
   ['LON', 51.5, -0.13], ['BER', 52.52, 13.4], ['SIN', 1.35, 103.82], ['TLV', 32.08, 34.78],
 ];
-// 1기 선정팀 20개 로고 — event.config.js 의 teams (public/assets/teams 의 흰색 로고, scale 은 팀별 크기 보정값)
+// 본선 진출 10개팀 로고(2026-11-24부터) — event.config.js 의 teams (public/assets/teams 의 흰색 로고, scale 은 팀별 크기 보정값)
 // 우주 곳곳에서 별처럼 나타나 잠시 떠 있다가, 제각각 서울(한국)을 향해 지구로 뛰어든다.
-const PARTNERS = event.teams.map((t) => {
+const PARTNERS = (event.heroTeams?.length ? event.heroTeams : event.teams).map((t) => {
   const img = new Image();
   img.decoding = 'async';
   img.src = `/assets/teams/${t.logo}?v=3`;
@@ -466,6 +467,11 @@ function createGlobe(canvas, opts = {}) {
         ctx.globalAlpha = state.alpha * TILE_GRAY * appear * a;
         ctx.drawImage(p.img, cx - sw / 2, cy - sh / 2, sw, sh);
       };
+      // 로고가 자리 수 이하면(본선 10개팀) 바꾸지 않고 제자리에 고정
+      if (n <= per) {
+        if (idx < n) drawLogo(PARTNERS[idx], 1);
+        return;
+      }
       drawLogo(PARTNERS[(cycle * per + idx) % n], 1 - mix);
       drawLogo(PARTNERS[((cycle + 1) * per + idx) % n], mix);
     });
@@ -821,7 +827,7 @@ function runTweens(now) {
 
 /* ================= HUD: 서울 시각 · 카운트다운 ================= */
 function startHud() {
-  $('#hudTeams').textContent = `${event.teams.length} PIONEERS`;
+  $('#hudTeams').textContent = `${event.teams.length} FINALISTS`;
   const pad = (n) => String(n).padStart(2, '0');
   const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const target = event.startsAt ? new Date(event.startsAt).getTime() : NaN;
