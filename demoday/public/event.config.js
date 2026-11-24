@@ -12,10 +12,16 @@ export default {
   titleKo: '데모데이',
   tagline: '글로벌 우수 기술 팀과 국내 산업이 만나는 시간',
 
+  // 빈 문자열('')은 문단 사이 간격.
   invitation: [
     '<b>혁신 기술</b>을 기반으로 <b>국내 기술사업화</b>를 추진하고 있는',
     '<b>K-테크 파이오니어즈 선정팀</b>의 <b>비전과 성장 가능성을 직접 만나보세요.</b>',
-    'DEMO DAY에 귀하를 정중히 초청합니다.',
+    '',
+    '선정팀 중 <b>본선 진출한 10개 팀이 DEMO DAY 무대에서</b>',
+    '<b>기술 경쟁력</b>과 <b>비즈니스 비전을 선보입니다.</b> <small>(*진출팀 11/24 공개)</small>',
+    '',
+    '<b>K-TECH PIONEERS DEMO DAY</b>에',
+    '귀하를 정중히 초청합니다.',
   ],
 
   // 현재 화면에서 ABOUT·PROGRAM 섹션은 빠져 있다(추후 수정 후 다시 노출 예정).
@@ -30,12 +36,15 @@ export default {
   dateKo: '2026년 12월 10일(목)',
   time: '',
   // 행사 정보 카드(DATE)에만 쓰는 표기. 비워두면 date·dateKo 로 만든다.
-  infoDate: '2026.12.10.(Thu)',
-  infoDateSub: '',
-  venue: 'Grand Mercure Imperial Palace Seoul Gangnam',
-  venueKo: '그랜드 머큐어 임피리얼 팰리스 서울 강남 · 서울특별시 강남구 언주로 640 (학동역 도보 6분)',
+  infoDate: '2026.12.10.(THU)',
+  infoDateSub: '13:30~17:30',
+  venue: 'Grand Mercure Imperial Palace 7F',
+  // 히어로 날짜 아래 한글 장소 줄(영문 venue 위에 표시). 2026-11-20 변경.
+  venueNameKo: '그랜드머큐어 임페리얼팰리스 7층',
+  // 행사 정보 카드 VENUE: 제목은 venueNameKo, 아래 줄은 venueKo
+  venueKo: '서울특별시 강남구 언주로 640 (학동역 6분)',
   address: '',
-  deadline: '', // 예: '2026년 11월 20일(금)'. 비워두면 숨김.
+  deadline: '2026.12.8.(TUE)', // 예: '2026년 11월 20일(금)'. 비워두면 숨김.
 
   // 히어로의 카운트다운 기준 시각(ISO, KST). 비워두면 카운트다운 숨김. 예: '2026-12-10T13:00:00+09:00'
   startsAt: '',
@@ -43,7 +52,16 @@ export default {
   // 행사 정보 카드 아래 타임테이블. 비워두면(null) 숨김.
   // 예: { head: ['시간','IR 피칭','비즈니스 매칭'], rows: [{ time:'13:30 – 15:30', ir:'A분과', irNote:'...' }, { break:'Break Time' }], match: { title, notes: [] } }
   // break 줄은 시간 없이 시간·IR 피칭 칸을 합쳐서 보여준다. match 는 비즈니스 매칭 칸 — 모든 줄을 하나로 합친 칸(제목 흰색, notes 회색).
-  timetable: null,
+  // 2026-11-20 확정 타임테이블. program 이 있으면 줄마다 세 번째 칸(프로그램)을 따로 그린다.
+  timetable: {
+    head: ['시간', '주요 일정', '프로그램'],
+    rows: [
+      { time: '13:30~13:40', ir: '오프닝', program: ['VIP 축사 및 환영사', '사업성과 공유'] },
+      { time: '13:40~14:00', ir: '키노트', program: ['AI 시대, 우리만의 기술은 무엇인가?'] },
+      { time: '14:00~17:00', ir: 'IR 피칭', program: ['본선 진출 10개사 IR 피칭 및 심사'] },
+      { time: '17:00~17:30', ir: '시상 및 경품 추첨', program: ['본상 및 특별상 시상', '수상팀 사진 촬영', '참가자 경품 추첨'] },
+    ],
+  },
 
   // [{ time: '16:00–17:30', en: 'Business Matching', ko: '비즈니스 매칭', note: '사전 매칭 시' }]
   // 비워두면 "세부 프로그램은 추후 안내" 로 표시된다.

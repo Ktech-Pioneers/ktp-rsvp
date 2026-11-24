@@ -9,7 +9,7 @@
   <meta property="og:title" content="K-TECH PIONEERS DEMO DAY — RSVP" />
   <meta property="og:description" content="글로벌 우수 기술 팀과 국내 산업이 만나는 시간" />
   <!-- TODO: 데모데이 히어로 캡처로 OG 이미지 새로 만들기 (도메인 정해지면 절대주소로) -->
-  <meta property="og:image" content="/assets/og-v2.jpg" />
+  <meta property="og:image" content="https://ktp-demoday-test.vercel.app/assets/og-demoday.jpg" />
   <meta property="og:type" content="website" />
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=panchang@500,600,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
-  <link rel="stylesheet" href="/styles.css?v=dd3" />
+  <link rel="stylesheet" href="/styles.css?v=dd11" />
 </head>
 <body class="is-intro">
   <canvas id="stars" aria-hidden="true"></canvas>
@@ -102,11 +102,10 @@
       <div class="finalists__divisions" id="finalistsGrid"></div>
     </section>
 
-    <!-- ===== PIONEERS (로고 띠) ===== -->
+    <!-- ===== PIONEERS (로고 띠) — 모바일에서만 보인다(PC 는 히어로에 로고가 있음) ===== -->
     <section class="pioneers reveal" id="pioneers">
       <div class="marquee" aria-hidden="true"><div class="marquee__track" id="marqueeA"></div></div>
       <div class="marquee marquee--rev" aria-hidden="true"><div class="marquee__track" id="marqueeB"></div></div>
-      <div class="pioneers__more"><a class="btn btn--primary" id="teamsLink" target="_blank" rel="noopener" hidden></a></div>
     </section>
 
     <!-- ===== RSVP FORM ===== -->
@@ -263,7 +262,7 @@
     </div>
   </div>
 
-  <script type="module" src="/app.js?v=dd3"></script>
+  <script type="module" src="/app.js?v=dd16"></script>
   <script type="module" src="/finalists.js?v=dd3"></script>
 </body>
 </html>
