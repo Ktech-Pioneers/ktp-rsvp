@@ -2,7 +2,7 @@
 // 데이터(assets/notion/teams.json)와 이미지는 노션에서 가져와 만든다. 노션 내용이 바뀌면 다시 만들어야 한다.
 // 카드를 누르면 주소가 #team/<slug> 로 바뀌고 상세 창이 열린다(뒤로 가기로 닫힘, 링크 공유 가능).
 
-import event from '/event.config.js';
+import event from '/event.config.js?v=dd28';
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -176,7 +176,7 @@ addEventListener('keydown', (e) => e.key === 'Escape' && !view.hidden && close()
 addEventListener('hashchange', sync);
 addEventListener('popstate', sync);
 
-fetch('/assets/notion/teams.json?v=3')
+fetch('/assets/notion/teams.json?v=4')
   .then((r) => r.json())
   .then((data) => {
     const bySlug = Object.fromEntries(data.map((t) => [t.slug, t]));
@@ -184,9 +184,9 @@ fetch('/assets/notion/teams.json?v=3')
       ...d,
       groups: d.groups.map((g) => ({ ...g, teams: g.teams.map((s) => bySlug[s]).filter(Boolean) })),
     }));
-    // 이전·다음 팀 이동도 분과 순서를 따른다. 분과에 안 넣은 팀은 맨 뒤에 붙는다.
+    // 이전·다음 팀 이동도 분과 순서를 따른다. 분과(본선 진출팀)에 안 넣은 팀은 보여주지 않는다.
     const listed = divisions.flatMap((d) => d.groups.flatMap((g) => g.teams));
-    teams = [...listed, ...data.filter((t) => !listed.includes(t))];
+    teams = listed.length ? listed : data;
     const draw = () => {
       const wide = WIDE.matches;
       grid.innerHTML = divisions.length

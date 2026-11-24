@@ -1,4 +1,4 @@
-import event from '/event.config.js';
+import event from '/event.config.js?v=dd28';
 
 const $ = (s, el = document) => el.querySelector(s);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -14,6 +14,12 @@ function fill() {
     ? `${event.date}${event.dateDay ? `<small>(${event.dateDay})</small>` : ''}${event.time ? ` ${event.time}` : ''}`
     : `DATE ${TBD}`;
   $('#heroVenue').textContent = event.venue || TBD;
+  if (event.venueNameKo && event.venue) {
+    const ko = document.createElement('span');
+    ko.className = 'hero__venue-ko';
+    ko.textContent = event.venueNameKo;
+    $('#heroVenue').before(ko);
+  }
   // 날짜·장소가 둘 다 미정이면 한 줄로 정리
   if (!event.date && !event.venue) {
     $('#heroDate').textContent = 'COMING SOON';
@@ -22,7 +28,7 @@ function fill() {
 
   $('#infoDate').textContent = event.infoDate || (event.date ? `${event.date} (${event.dateDay})` : TBD);
   $('#infoDateKo').textContent = event.infoDateSub || [event.dateKo, event.time].filter(Boolean).join(' ');
-  $('#infoVenue').textContent = event.venue || TBD;
+  $('#infoVenue').textContent = event.venueNameKo || event.venue || TBD;
   $('#infoVenueKo').textContent = [event.venueKo, event.address].filter(Boolean).join(' · ');
   if (event.deadline) $('#infoDeadline').textContent = event.deadline;
   else $('#infoDeadline').textContent = TBD;
@@ -41,27 +47,39 @@ function fill() {
           (r.break
             ? `<tr class="is-break"><td colspan="2">${r.break}</td>`
             : `<tr><th scope="row">${r.time}</th><td><strong>${r.ir}</strong>${r.irNote ? `<span>${r.irNote}</span>` : ''}</td>`) +
+          (r.program ? `<td class="tt-program">${r.program.map((n) => `<span>${n}</span>`).join('')}</td>` : '') +
           `${i === 0 ? matchCell : ''}</tr>`
       )
       .join('');
     $('#timetable').hidden = false;
   }
 
-  $('#invitation').innerHTML = event.invitation.join(' <br />');
-  const logo = (t, cls = '') =>
-    t.logo ? `<img class="${cls}" src="/assets/teams/${t.logo}?v=3" alt="" data-scale="${t.scale || 1}" />` : '';
-  const pill = (t) => `<span>${logo(t, 'team-logo')}<em>${t.name}</em></span>`;
-  const half = Math.ceil(event.teams.length / 2);
-  const a = event.teams.slice(0, half).map(pill).join('');
-  const b = event.teams.slice(half).map(pill).join('');
+  // 빈 줄('')을 기준으로 문단을 나눈다
+  $('#invitation').innerHTML = event.invitation
+    .join('\n')
+    .split(/\n\n+/)
+    .map((para) => `<span class="letter__para">${para.split('\n').join(' <br />')}</span>`)
+    .join('');
+
+  // 선정팀 로고 띠(모바일 전용). 로고마다 비율이 달라 보이는 면적이 비슷해지도록 높이를 개별 계산.
+  const logo = (t) => (t.logo ? `<img class="team-logo" src="/assets/teams/${t.logo}?v=3" alt="" data-scale="${t.scale || 1}" />` : '');
+  const pill = (t) => `<span>${logo(t)}<em>${t.name}</em></span>`;
+  const strip = event.heroTeams?.length ? event.heroTeams : event.teams; // 로고 띠: 선정팀 20개사
+  const half = Math.ceil(strip.length / 2);
+  const a = strip.slice(0, half).map(pill).join('');
+  const b = strip.slice(half).map(pill).join('');
   $('#marqueeA').innerHTML = (a + a).repeat(2);
   $('#marqueeB').innerHTML = (b + b).repeat(2);
-  if (!event.teams.length) $('#pioneers').remove();
-  if (event.teamsLink) {
-    $('#teamsLink').href = event.teamsLink.href;
-    $('#teamsLink').textContent = event.teamsLink.label;
-    $('#teamsLink').hidden = false;
-  }
+  if (!strip.length) $('#pioneers').remove();
+  document.querySelectorAll('.team-logo').forEach((img) => {
+    const size = () => {
+      const ratio = img.naturalWidth / img.naturalHeight || 4;
+      const k = Number(img.dataset.scale) || 1;
+      const h = Math.min(48, Math.sqrt(3400 / ratio) * k, (210 * k) / ratio);
+      img.style.height = `${h.toFixed(1)}px`;
+    };
+    img.complete ? size() : img.addEventListener('load', size, { once: true });
+  });
 
   // form groups
   const letters = 'ABCDEFG';
@@ -84,22 +102,46 @@ function fill() {
       .map((m) => `<label class="chip"><input type="radio" name="matching" value="${m}" /><span>${m}</span></label>`)
       .join('');
   }
-  // 로고마다 가로세로 비율이 달라서, 눈에 보이는 면적이 비슷해지도록 높이를 개별 계산한다.
-  document.querySelectorAll('.team-logo').forEach((img) => {
-    const size = () => {
-      const ratio = img.naturalWidth / img.naturalHeight || 4;
-      const k = Number(img.dataset.scale) || 1;
-      const h = Math.min(48, Math.sqrt(3400 / ratio) * k, (210 * k) / ratio);
-      img.style.height = `${h.toFixed(1)}px`;
-    };
-    img.complete ? size() : img.addEventListener('load', size, { once: true });
-  });
   [...document.querySelectorAll('.group:not([hidden]) .num')].forEach((n, i) => (n.textContent = letters[i]));
 
   const pv = event.privacy;
   $('#privacy').innerHTML = `<p>${pv.org}은(는) 본 행사 참가 신청 및 운영을 위해 아래와 같이 개인정보를 수집·이용합니다.</p>
     <dl><dt>수집 항목</dt><dd>${pv.items}</dd><dt>수집 목적</dt><dd>${pv.purpose}</dd><dt>보유·이용 기간</dt><dd>${pv.retention}</dd></dl>
     <p>개인정보 수집·이용에 대한 동의를 거부할 권리가 있으나, 동의하지 않을 경우 행사 참가 신청이 제한될 수 있습니다.</p>`;
+
+  if (event.homepage?.href) {
+    $('#homeLink').href = event.homepage.href;
+    $('#homeLinkLabel').textContent = event.homepage.label;
+    $('#homeLink').hidden = false;
+  }
+
+  if (event.prizes?.items?.length) {
+    const ICONS = {
+      watch: '<rect x="7" y="6" width="10" height="12" rx="3"/><path d="M9 6V3h6v3M9 18v3h6v-3M12 10v2.5l1.5 1"/>',
+      hotel: '<path d="M3 19V7M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11.5" r="1.8"/>',
+      speaker: '<rect x="5" y="3" width="14" height="18" rx="4"/><circle cx="12" cy="14" r="3.5"/><circle cx="12" cy="7.5" r="1"/>',
+      gift: '<rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M3 9h18M12 9v11M12 9c-1.5-3-5-4-5-1.5S10 9 12 9c2 0 5 1 5-1.5S13.5 6 12 9"/>',
+    };
+    $('#prizesNote').textContent = event.prizes.note || '';
+    $('#prizesGrid').innerHTML = event.prizes.items
+      .map((p) => `<li class="prize">
+        <div class="prize__media${p.photo ? ' prize__media--photo' : ''}${p.stack ? ' prize__media--stack' : ''}">
+          <i class="prize__spark" aria-hidden="true"></i><i class="prize__spark" aria-hidden="true"></i><i class="prize__spark" aria-hidden="true"></i>${
+          p.img && p.stack
+            ? `<span class="prize__cards"><img class="prize__card prize__card--back" src="/assets/prizes/${p.img}" alt="" loading="lazy" decoding="async" /><img class="prize__card" src="/assets/prizes/${p.img}" alt="" loading="lazy" decoding="async" /></span>`
+            : p.img
+            ? `<img src="/assets/prizes/${p.img}" alt="" loading="lazy" decoding="async" />`
+            : `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[p.icon] || ICONS.gift}</svg>`
+        }</div>
+        <div class="prize__body">
+          <span class="prize__brand">${p.brand}</span>
+          <strong class="prize__name">${p.name}</strong>
+          <span class="prize__count">${p.count}명</span>
+        </div>
+      </li>`)
+      .join('');
+    $('#prizes').hidden = false;
+  }
 
   $('#links').innerHTML = event.links
     .map((l) => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`)
@@ -119,6 +161,22 @@ const HUBS = [
   ['SFO', 37.77, -122.42], ['BOS', 42.36, -71.06], ['NYC', 40.71, -74.0], ['YYZ', 43.65, -79.38],
   ['LON', 51.5, -0.13], ['BER', 52.52, 13.4], ['SIN', 1.35, 103.82], ['TLV', 32.08, 34.78],
 ];
+// 본선 진출 10개팀 로고(2026-11-24부터) — event.config.js 의 teams (public/assets/teams 의 흰색 로고, scale 은 팀별 크기 보정값)
+// 우주 곳곳에서 별처럼 나타나 잠시 떠 있다가, 제각각 서울(한국)을 향해 지구로 뛰어든다.
+const PARTNERS = (event.heroTeams?.length ? event.heroTeams : event.teams).map((t) => {
+  const img = new Image();
+  img.decoding = 'async';
+  img.src = `/assets/teams/${t.logo}?v=3`;
+  return { name: t.name, img, scale: t.scale ?? 1 };
+});
+// 매번 순서를 섞어서 한 묶음 안에 여러 업종이 섞이게
+for (let i = PARTNERS.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [PARTNERS[i], PARTNERS[j]] = [PARTNERS[j], PARTNERS[i]];
+}
+const LANES = 10; // 동시에 떠 있는 로고 자리 수
+// 히어로 로고 연출: 'tiles' = 좌우 카드 10개에서 로고가 옆으로 밀리며 교체(scceioi.kr 레퍼런스) / 'dive' = 지구로 뛰어들기
+const HERO_LOGOS = new URLSearchParams(location.search).get('logos') || 'tiles';
 function createGlobe(canvas, opts = {}) {
   const ctx = canvas.getContext('2d');
   let w = 0, h = 0;
@@ -363,7 +421,248 @@ function createGlobe(canvas, opts = {}) {
 
     // orbit ring — front half
     drawOrbit(R, clock, o, true);
+    if (opts.partners !== false && HERO_LOGOS === 'dive') drawPartners(t, R, mobile, rot);
     ctx.restore();
+    if (opts.partners !== false && HERO_LOGOS === 'tiles' && !mobile) drawTiles(t, mobile); // 모바일은 히어로 로고 없음(아래 로고 띠로 대신)
+  }
+  // ---- 선정팀 로고 자리: 중앙 문구 좌우에 흩어진 10자리(카드 배경 없음) ----
+  // [가로 위치, 세로 위치(화면 비율), 로고 자리 너비, 높이(px, 1440 기준)]
+  const TILE_D = [
+    [0.09, 0.4, 150, 84], [0.2, 0.48, 120, 66], [0.1, 0.57, 176, 98], [0.21, 0.66, 112, 62], [0.09, 0.75, 140, 78],
+    [0.91, 0.39, 160, 88], [0.8, 0.48, 120, 66], [0.9, 0.57, 136, 76], [0.79, 0.66, 150, 84], [0.91, 0.76, 120, 66],
+  ];
+  const TILE_M = [
+    [0.13, 0.4, 92, 52], [0.17, 0.52, 80, 46], [0.12, 0.64, 88, 50],
+    [0.87, 0.38, 88, 50], [0.83, 0.51, 80, 46], [0.88, 0.63, 92, 52],
+  ];
+  // 로고 10개는 옅은 회색으로 떠 있다가, 다음 10개로 같은 자리에서 스르륵 교차하며 바뀐다.
+  // 인트로: 지구가 펼쳐질 때 지구 중심에서 좌우 번갈아 촤라라락 퍼져 나와 자리를 잡는다.
+  const TILE_CYCLE = 6; // 한 묶음이 보이는 시간(초)
+  const TILE_FADE = 1.4; // 교차 전환 시간
+  const TILE_GRAY = 0.62; // 흰 로고의 불투명도 → 검은 배경 위에서 옅은 회색
+  const TILE_SIZE = 0.65; // 로고 크기 배율
+  let tilesT0 = null;
+  function drawTiles(t, mobile) {
+    const n = PARTNERS.length;
+    if (!n) return;
+    const now = t / 1000;
+    if (tilesT0 === null) {
+      if (state.open < 0.06) return; // 지구가 펼쳐지기 시작할 때 함께
+      tilesT0 = now;
+    }
+    const layout = mobile ? TILE_M : TILE_D;
+    const k = mobile ? 1 : Math.max(0.72, Math.min(1.12, w / 1440));
+    const tau = now - tilesT0;
+    const cycle = Math.floor(tau / TILE_CYCLE);
+    const toSwap = TILE_CYCLE - (tau - cycle * TILE_CYCLE); // 다음 전환까지 남은 시간
+    let mix = toSwap < TILE_FADE ? 1 - toSwap / TILE_FADE : 0; // 0 = 지금 로고, 1 = 다음 로고
+    mix = mix * mix * (3 - 2 * mix);
+    const per = layout.length;
+    const half = Math.ceil(per / 2);
+    const gx = w * 0.5, gy = h * (opts.cy ?? 0.6); // 지구 중심
+    ctx.save();
+    layout.forEach(([fx, fy, tw0, th0], idx) => {
+      const tw = tw0 * k, th = th0 * k;
+      // 제자리에서 둥둥(PC만): 로고마다 속도·위상이 다른 느린 흔들림(세로 ±6px, 가로 ±3px)
+      const bob = reduced || mobile ? 0 : 1; // 모바일에서는 둥둥 움직임 없이 고정
+      let cx = fx * w + Math.sin(now * (0.33 + (idx % 4) * 0.04) + idx * 2.3) * 3 * bob;
+      let cy = fy * h + Math.sin(now * (0.5 + (idx % 3) * 0.07) + idx * 1.7) * 6 * bob;
+      const order = (idx % half) * 2 + (idx >= half ? 1 : 0);
+      const st = tau - 0.2 - order * 0.09;
+      if (st <= 0 && !reduced) return;
+      const sp = reduced ? 1 : Math.min(1, st / 1.5);
+      const e = sp >= 1 ? 1 : 1 - Math.pow(2, -10 * sp);
+      cx = gx + (cx - gx) * e;
+      cy = gy + (cy - gy) * e;
+      const sc = 0.3 + 0.7 * e;
+      const appear = Math.min(1, sp * 5);
+      // 퍼져 나갈 때 지구 쪽으로 남는 은은한 빛꼬리
+      if (e < 0.98 && !reduced) {
+        const d = Math.hypot(gx - cx, gy - cy) || 1;
+        const L = Math.min(d, 40 + 160 * (1 - e));
+        const ux = (gx - cx) / d, uy = (gy - cy) / d;
+        const g = ctx.createLinearGradient(cx, cy, cx + ux * L, cy + uy * L);
+        g.addColorStop(0, `rgba(200,195,255,${0.4 * (1 - e) * state.alpha})`);
+        g.addColorStop(1, 'rgba(140,120,255,0)');
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + ux * L, cy + uy * L);
+        ctx.stroke();
+      }
+      const drawLogo = (p, a) => {
+        if (!p.img.complete || !p.img.naturalWidth || a <= 0.002) return;
+        let [sw, sh] = logoSize(p, false);
+        const f = Math.min((tw * 0.9) / sw, (th * 0.5) / sh, (tw / 150) * 1.45) * TILE_SIZE * sc;
+        sw *= f;
+        sh *= f;
+        ctx.globalAlpha = state.alpha * TILE_GRAY * appear * a;
+        ctx.drawImage(p.img, cx - sw / 2, cy - sh / 2, sw, sh);
+      };
+      // 로고가 자리 수 이하면(본선 10개팀) 바꾸지 않고 제자리에 고정
+      if (n <= per) {
+        if (idx < n) drawLogo(PARTNERS[idx], 1);
+        return;
+      }
+      drawLogo(PARTNERS[(cycle * per + idx) % n], 1 - mix);
+      drawLogo(PARTNERS[((cycle + 1) * per + idx) % n], mix);
+    });
+    ctx.restore();
+  }
+  // ---- 선정팀 로고: 각자 우주에 떠 있다가 지구(서울)로 뛰어든다 ----
+  // 자리(lane)마다 나타나는 방향이 정해져 있고(제목·날짜 글자를 피해서), 타이밍은 제각각 랜덤.
+  const LANE_DEG = [-48, -18, 12, 38, 142, 168, 198, 228, -8, 188];
+  const LANE_R = [1.0, 1.12, 0.96, 1.08, 1.06, 0.95, 1.12, 1.0, 1.3, 1.3];
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  let nextTeam = 0;
+  const lanes = Array.from({ length: LANES }, (_, i) => ({ i, t0: null, delay: i * 0.45 + rnd(0, 0.5) }));
+  function resetLane(L, now) {
+    L.team = PARTNERS[nextTeam++ % PARTNERS.length];
+    L.t0 = now + L.delay;
+    L.delay = rnd(0.2, 1.4); // 다음 차례까지 쉬는 시간
+    L.fadeIn = 0.9;
+    L.hold = rnd(2.2, 4.8); // 떠 있는 시간
+    L.dive = rnd(1.0, 1.4); // 뛰어드는 시간
+    L.jitter = [rnd(-0.12, 0.12), rnd(-0.08, 0.08)];
+    L.aim = [rnd(-0.18, 0.18), rnd(-0.12, 0.12)]; // 서울 근처 착지 지점 흩뿌림
+    L.curve = rnd(0.25, 0.55) * (Math.random() < 0.5 ? -1 : 1);
+    L.ph = rnd(0, Math.PI * 2);
+    L.impact = null;
+  }
+  const logoSize = (p, mobile) => {
+    const ratio = p.img.naturalWidth / p.img.naturalHeight || 4;
+    const hh = Math.min(48, Math.sqrt(3400 / ratio) * p.scale, (210 * p.scale) / ratio) * (mobile ? 0.42 : 0.6);
+    return [hh * ratio, hh];
+  };
+  const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+  let partnersT0 = null;
+  function drawPartners(t, R, mobile, rot) {
+    if (!PARTNERS.length) return;
+    const now = t / 1000;
+    if (partnersT0 === null) {
+      if (state.open < 0.9) return; // 인트로에서 지구가 다 열린 뒤 시작
+      partnersT0 = now;
+      lanes.forEach((L) => resetLane(L, now));
+    }
+    // 착지 목표: 서울이 앞면에 있으면 서울 근처, 아니면 지구 앞면 중앙 근처
+    const sp = project(vec(...seoul), rot, R);
+    const tgt = sp[2] > 0.15 ? [sp[0], sp[1]] : [R * 0.1, -R * 0.2];
+    const rx = mobile ? w * 0.36 : Math.min(R * 2.1, w * 0.43);
+    const ry = mobile ? R * 1.25 : R * 1.3;
+    const prev = ctx.globalCompositeOperation;
+    ctx.globalCompositeOperation = 'source-over';
+    const items = [];
+    for (const L of lanes) {
+      if (mobile && L.i >= 7) continue; // 좁은 화면은 7개만
+      const p = L.team;
+      const local = now - L.t0;
+      const total = L.fadeIn + L.hold + (reduced ? 0.8 : L.dive);
+      // 착지 후 퍼지는 빛(로고가 사라진 뒤에도 잠깐 남는다)
+      if (L.impact) {
+        const k = (now - L.impact.t) / 0.9;
+        if (k < 1) {
+          ctx.strokeStyle = `rgba(255,180,230,${0.8 * (1 - k) * state.alpha})`;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.ellipse(L.impact.x, L.impact.y, R * (0.02 + 0.16 * k), R * (0.012 + 0.09 * k), 0, 0, Math.PI * 2);
+          ctx.stroke();
+          glow(L.impact.x, L.impact.y, R * (0.04 + 0.05 * (1 - k)), (1 - k) * state.alpha, '255,190,235');
+        } else L.impact = null;
+      }
+      if (local >= total) {
+        if (!L.impact) resetLane(L, now);
+        continue;
+      }
+      if (local < 0 || !p.img.complete || !p.img.naturalWidth) continue;
+      const ang = (LANE_DEG[L.i] * Math.PI) / 180 + L.jitter[0];
+      // 떠 있는 동안 아주 천천히 지구 둘레를 미끄러진다
+      const drift = (local - L.fadeIn) * 0.02 * (L.i % 2 ? 1 : -1);
+      const rr = LANE_R[L.i] * (1 + L.jitter[1]);
+      let [sw, sh] = logoSize(p, mobile);
+      const edge = w / 2 - sw / 2 - 14; // 화면 밖으로 잘리지 않게
+      const hx = Math.max(-edge, Math.min(edge, Math.cos(ang + drift) * rx * rr));
+      const hy = Math.sin(ang + drift) * ry * rr + Math.sin(now * 0.8 + L.ph) * 3;
+      let x = hx, y = hy, alpha = 1, scale = 1, trail = null;
+      if (local < L.fadeIn) {
+        const k = easeOut(local / L.fadeIn);
+        alpha = k;
+        scale = 0.6 + 0.4 * k;
+      } else if (local > L.fadeIn + L.hold) {
+        const u = (local - L.fadeIn - L.hold) / (reduced ? 0.8 : L.dive);
+        if (reduced) alpha = 1 - u;
+        else {
+          // 휘어지는 궤적(2차 베지어)으로 가속하며 뛰어든다
+          const ex = tgt[0] + L.aim[0] * R, ey = tgt[1] + L.aim[1] * R;
+          const mx = (hx + ex) / 2, my = (hy + ey) / 2;
+          const nx = -(ey - hy), ny = ex - hx;
+          const cx1 = mx + nx * L.curve * 0.5, cy1 = my + ny * L.curve * 0.5;
+          const at = (q) => {
+            const a1 = (1 - q) * (1 - q), b1 = 2 * (1 - q) * q, c1 = q * q;
+            return [a1 * hx + b1 * cx1 + c1 * ex, a1 * hy + b1 * cy1 + c1 * ey];
+          };
+          const q = u * u * u; // ease-in: 처음엔 천천히, 끝에 확 빨려 들어감
+          [x, y] = at(q);
+          scale = 1 - 0.88 * q;
+          alpha = u < 0.85 ? 1 : 1 - (u - 0.85) / 0.15;
+          trail = [at(Math.max(0, q - 0.08 - 0.25 * u)), u];
+          if (u > 0.97 && !L.impact) L.impact = { t: now, x: ex, y: ey };
+        }
+      }
+      items.push({ img: p.img, x, y, sw: sw * scale, sh: sh * scale, A: alpha * state.alpha, trail, float: !trail });
+    }
+    // 떠 있는 로고끼리 겹치면 위아래로 살짝 밀어낸다(겹친 만큼만 밀어서 부드럽게)
+    for (let pass = 0; pass < 3; pass++) {
+      for (let m = 0; m < items.length; m++) {
+        for (let n = m + 1; n < items.length; n++) {
+          const P = items[m], Q = items[n];
+          if (!P.float || !Q.float) continue;
+          const ox = (P.sw + Q.sw) / 2 + 10 - Math.abs(P.x - Q.x);
+          const oy = (P.sh + Q.sh) / 2 + 12 - Math.abs(P.y - Q.y);
+          if (ox <= 0 || oy <= 0) continue;
+          const d = (P.y <= Q.y ? -1 : 1) * oy * 0.5;
+          P.y += d;
+          Q.y -= d;
+        }
+      }
+    }
+    // 모바일은 지구 아래 날짜 글자 쪽으로 밀려 내려가지 않게
+    if (mobile) for (const it of items) if (it.float) it.y = Math.min(it.y, R * 0.78);
+    for (const { x, y, sw, sh, A, trail, img } of items) {
+      // 뛰어들 때 뒤로 남는 빛꼬리
+      if (trail) {
+        const [[tx, ty], u] = trail;
+        const g = ctx.createLinearGradient(x, y, tx, ty);
+        g.addColorStop(0, `rgba(255,215,245,${0.9 * A})`);
+        g.addColorStop(1, 'rgba(140,120,255,0)');
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 1 + 2.2 * u;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(tx, ty);
+        ctx.stroke();
+        glow(x, y, 4 + 10 * u, A * u, '255,200,240');
+      }
+      // 별처럼 은은한 빛무리
+      const halo = ctx.createRadialGradient(x, y, 0, x, y, sw * 0.7 + 4);
+      halo.addColorStop(0, `rgba(120,110,255,${0.13 * A})`);
+      halo.addColorStop(1, 'rgba(90,70,255,0)');
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.ellipse(x, y, sw * 0.7 + 4, sh * 1.4 + 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.save();
+      ctx.globalAlpha = A;
+      if (!mobile) {
+        ctx.shadowColor = 'rgba(170,160,255,0.8)';
+        ctx.shadowBlur = 8;
+      }
+      ctx.drawImage(img, x - sw / 2, y - sh / 2, sw, sh);
+      ctx.restore();
+    }
+    ctx.globalCompositeOperation = prev;
   }
   function glow(x, y, r, a, rgb) {
     const gg = ctx.createRadialGradient(x, y, 0, x, y, r);
@@ -562,7 +861,7 @@ function runTweens(now) {
 
 /* ================= HUD: 서울 시각 · 카운트다운 ================= */
 function startHud() {
-  $('#hudTeams').textContent = `${event.teams.length} PIONEERS`;
+  $('#hudTeams').textContent = `${event.teams.length} FINALISTS`;
   const pad = (n) => String(n).padStart(2, '0');
   const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const target = event.startsAt ? new Date(event.startsAt).getTime() : NaN;
@@ -582,6 +881,11 @@ function startHud() {
 }
 
 /* ================= boot ================= */
+// 항상 맨 위(히어로)에서 시작: 주소에 #rsvp 등이 남아 있거나 브라우저가 이전 스크롤 위치를 되살려
+// 모바일에서 신청 폼까지 바로 내려가 버리는 것을 막는다. 선정팀 상세(#team/...)는 그대로 둔다.
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+if (location.hash && !location.hash.startsWith('#team/')) history.replaceState(null, '', location.pathname + location.search);
+scrollTo(0, 0);
 fill();
 startHud();
 const orb = createGlobe($('#orb'));
@@ -756,7 +1060,7 @@ function openWelcome(d, id) {
     c.id = 'welcomeOrb';
     c.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;opacity:.55';
     welcome.prepend(c);
-    welcomeOrb = createGlobe(c, { cy: 0.5, scale: 1.25, labels: false });
+    welcomeOrb = createGlobe(c, { cy: 0.5, scale: 1.25, labels: false, partners: false });
   }
   welcomeOrb.state.open = 0;
   welcomeOrb.state.glow = 0;

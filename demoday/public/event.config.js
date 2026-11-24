@@ -12,10 +12,16 @@ export default {
   titleKo: '데모데이',
   tagline: '글로벌 우수 기술 팀과 국내 산업이 만나는 시간',
 
+  // 빈 문자열('')은 문단 사이 간격.
   invitation: [
     '<b>혁신 기술</b>을 기반으로 <b>국내 기술사업화</b>를 추진하고 있는',
     '<b>K-테크 파이오니어즈 선정팀</b>의 <b>비전과 성장 가능성을 직접 만나보세요.</b>',
-    'DEMO DAY에 귀하를 정중히 초청합니다.',
+    '',
+    '선정팀 중 <b>본선 진출한 10개 팀이 DEMO DAY 무대에서</b>',
+    '<b>기술 경쟁력</b>과 <b>비즈니스 비전을 선보입니다.</b>',
+    '',
+    '<b>K-TECH PIONEERS DEMO DAY</b>에',
+    '귀하를 정중히 초청합니다.',
   ],
 
   // 현재 화면에서 ABOUT·PROGRAM 섹션은 빠져 있다(추후 수정 후 다시 노출 예정).
@@ -30,12 +36,15 @@ export default {
   dateKo: '2026년 12월 10일(목)',
   time: '',
   // 행사 정보 카드(DATE)에만 쓰는 표기. 비워두면 date·dateKo 로 만든다.
-  infoDate: '2026.12.10.(Thu)',
-  infoDateSub: '',
-  venue: 'Grand Mercure Imperial Palace Seoul Gangnam',
-  venueKo: '그랜드 머큐어 임피리얼 팰리스 서울 강남 · 서울특별시 강남구 언주로 640 (학동역 도보 6분)',
+  infoDate: '2026.12.10.(THU)',
+  infoDateSub: '14:00~18:00',
+  venue: 'Grand Mercure Imperial Palace 7F',
+  // 히어로 날짜 아래 한글 장소 줄(영문 venue 위에 표시). 2026-11-20 변경.
+  venueNameKo: '그랜드머큐어 임페리얼팰리스 7층',
+  // 행사 정보 카드 VENUE: 제목은 venueNameKo, 아래 줄은 venueKo
+  venueKo: '서울특별시 강남구 언주로 640 (학동역 6분, 주차 가능)',
   address: '',
-  deadline: '', // 예: '2026년 11월 20일(금)'. 비워두면 숨김.
+  deadline: '2026.12.8.(TUE)', // 예: '2026년 11월 20일(금)'. 비워두면 숨김.
 
   // 히어로의 카운트다운 기준 시각(ISO, KST). 비워두면 카운트다운 숨김. 예: '2026-12-10T13:00:00+09:00'
   startsAt: '',
@@ -43,7 +52,16 @@ export default {
   // 행사 정보 카드 아래 타임테이블. 비워두면(null) 숨김.
   // 예: { head: ['시간','IR 피칭','비즈니스 매칭'], rows: [{ time:'13:30 – 15:30', ir:'A분과', irNote:'...' }, { break:'Break Time' }], match: { title, notes: [] } }
   // break 줄은 시간 없이 시간·IR 피칭 칸을 합쳐서 보여준다. match 는 비즈니스 매칭 칸 — 모든 줄을 하나로 합친 칸(제목 흰색, notes 회색).
-  timetable: null,
+  // 2026-11-24 변경 타임테이블(14:00~18:00, 시상·경품 17:30~18:00). program 이 있으면 줄마다 세 번째 칸(프로그램)을 따로 그린다.
+  timetable: {
+    head: ['시간', '주요 일정', '프로그램'],
+    rows: [
+      { time: '14:00~14:10', ir: '오프닝', program: ['VIP 축사 및 환영사', '사업성과 공유'] },
+      { time: '14:10~14:30', ir: '키노트', program: ['AI 시대, 우리만의 기술은 무엇인가?'] },
+      { time: '14:30~17:30', ir: 'IR 피칭', program: ['본선 진출 10개사 IR 피칭 및 심사'] },
+      { time: '17:30~18:00', ir: '시상 및 경품 추첨', program: ['본상 및 특별상 시상', '수상팀 사진 촬영', '참가자 경품 추첨'] },
+    ],
+  },
 
   // [{ time: '16:00–17:30', en: 'Business Matching', ko: '비즈니스 매칭', note: '사전 매칭 시' }]
   // 비워두면 "세부 프로그램은 추후 안내" 로 표시된다.
@@ -55,7 +73,22 @@ export default {
   // 선정팀 — 로고 띠와 "관심 있는 참가팀" 선택지에 쓰인다. 순서는 노션 「1기 선정팀」과 같게 둔다.
   // logo 는 public/assets/teams/ 의 흰색 로고. scale 은 눈으로 봤을 때 크기가 비슷해 보이도록 하는 개별 보정값.
   // 선정팀 카드·상세 내용은 노션에서 가져온 public/assets/notion/teams.json 을 쓴다(finalists.js).
+  // 2026-11-24 본선 진출 10개팀만(분야 순서: 피지컬 AI · 산업용 AI | 바이오·헬스케어 · 미디어·커머스).
   teams: [
+    { name: 'Contoro Robotics', logo: 'contoro.png', scale: 1.25 },
+    { name: 'OpenGraph Labs', logo: 'opengraph-labs.png', scale: 1.08 },
+    { name: 'SECA', logo: 'seca.png', scale: 1.05 },
+    { name: 'Linqalpha', logo: 'linqalpha.png', scale: 0.95 },
+    { name: 'Pinta AI', logo: 'pinta-ai.png' },
+    { name: 'CyrenConnect', logo: 'cyrencare.png' },
+    { name: 'iQ Surgical', logo: 'iq-surgical.png', scale: 0.62 },
+    { name: 'Roblossom', logo: 'roblossom.png', scale: 1.3 },
+    { name: 'Skinseoul Lab', logo: 'skinseoullab.png', scale: 1.2 },
+    { name: 'Trxbx', logo: 'trxbx.png' },
+  ],
+  // 히어로 로고(PC)와 모바일 로고 띠에는 1기 선정팀 20개사를 모두 보여준다(2026-11-24 요청).
+  // 비워두면 위 teams(본선 10팀)를 쓴다. 이름은 노션 변경 이름(CyrenConnect·Roblossom·Skinseoul Lab) 기준.
+  heroTeams: [
     { name: 'Contoro Robotics', logo: 'contoro.png', scale: 1.25 },
     { name: 'SECA', logo: 'seca.png', scale: 1.05 },
     { name: 'OpenGraph Labs', logo: 'opengraph-labs.png', scale: 1.08 },
@@ -64,7 +97,7 @@ export default {
     { name: 'Linqalpha', logo: 'linqalpha.png', scale: 0.95 },
     { name: 'Pinta AI', logo: 'pinta-ai.png' },
     { name: 'BizCrush', logo: 'bizcrush.png' },
-    { name: 'SkinSeoulLab', logo: 'skinseoullab.png', scale: 1.2 },
+    { name: 'Skinseoul Lab', logo: 'skinseoullab.png', scale: 1.2 },
     { name: 'Storika', logo: 'storika.png', scale: 0.88 },
     { name: 'Trxbx', logo: 'trxbx.png' },
     { name: 'aix', logo: 'aix.png', scale: 0.82 },
@@ -72,10 +105,10 @@ export default {
     { name: 'KINZ', logo: 'kinz.png', scale: 0.8 },
     { name: 'SERiD AI', logo: 'serid-ai.png', scale: 1.2 },
     { name: 'Pen-AI SMT', logo: 'pen-ai-smt.png', scale: 1.35 },
-    { name: 'K-ATR', logo: 'roblossom.png', scale: 1.3 },
+    { name: 'Roblossom', logo: 'roblossom.png', scale: 1.3 },
     { name: 'iQ Surgical', logo: 'iq-surgical.png', scale: 0.62 },
     { name: 'Celuragen Therapeutics', logo: 'celuragen.png', scale: 1.3 },
-    { name: 'CyrenCare', logo: 'cyrencare.png' },
+    { name: 'CyrenConnect', logo: 'cyrencare.png' },
   ],
   // 로고 띠 아래 버튼. 비워두면 숨김.
   // 선정팀 상세를 사이트 안에서 보여주게 되어 노션 버튼은 뺐다(2026-10-28).
@@ -88,25 +121,43 @@ export default {
     {
       name: '',
       groups: [
+        // 2026-11-24 본선 진출 10개팀. PC 1줄: 피지컬 AI 3 + 산업용 AI 2 / 2줄: 바이오·헬스케어 3 + 미디어·커머스 2
+        // slug 는 노션 페이지 주소 그대로(CyrenCare=CyrenConnect, K-ATR=Roblossom, SkinSeoulLab=Skinseoul Lab — 2026-11-24 노션에서 이름 변경)
         { field: '피지컬 AI', teams: ['Contoro-Robotics', 'OpenGraph-Labs', 'SECA'] },
-        { field: '산업용 AI', teams: ['BizCrush', 'Linqalpha', 'Pen-AI-SMT-Smart-Manufacturing-Team', 'Pinta-AI', 'SERiD-AI'] },
-        { field: '우주·항공', teams: ['Surrey-Space-Solar', 'WayFinder-Space'] },
-        { field: '바이오·헬스케어', teams: ['Celuragen-Therapeutics', 'CyrenCare', 'iQ-Surgical', 'K-ATR'] },
-        { field: '미디어·커머스', teams: ['aix', 'DocentPro', 'KINZ', 'SkinSeoulLab', 'Storika', 'Trxbx'] },
+        { field: '산업용 AI', teams: ['Linqalpha', 'Pinta-AI'] },
+        { field: '바이오·헬스케어', teams: ['CyrenCare', 'iQ-Surgical', 'K-ATR'] },
+        { field: '미디어·커머스', teams: ['SkinSeoulLab', 'Trxbx'] },
       ],
     },
   ],
   teamsHint: '관심 있는 선정팀을 골라주시면 현장 네트워킹·비즈니스 매칭에 참고하겠습니다.',
   // 신청서에 "관심 있는 참가팀" 질문을 받을지. true 로 바꾸면 질문과 관리자·엑셀·시트의 "관심 참가팀" 열이 다시 생긴다.
-  askTeams: true,
+  askTeams: false, // 2026-11-24 클라이언트 요청으로 질문 삭제
   // "비즈니스 매칭 희망 여부" 질문(필수, 하나만 선택). 비워두면 질문과 관리자·엑셀·시트의 열이 숨겨진다.
-  matching: ['희망합니다', '희망하지 않습니다'],
+  matching: [], // 2026-11-24 클라이언트 요청으로 질문 삭제(예전: ['희망합니다', '희망하지 않습니다'])
 
   privacy: {
     org: '(주)멋쟁이사자처럼',
     items: '소속, 성명, 직책, 연락처(이메일/휴대전화)',
-    purpose: '행사 참가자 확인 및 안내, 비즈니스 매칭 운영 및 관련 연락',
+    purpose: '행사 참가자 확인 및 안내',
     retention: '행사 종료 및 관련 운영 업무 완료 후 파기',
+  },
+
+  // 상단 오른쪽 작은 링크(KTP 홈페이지). 비워두면(null) 숨김. 2026-11-24 클라이언트 요청.
+  homepage: { label: 'KTP 홈페이지', href: 'https://ktechpioneers.com/' },
+
+  // 참가자 경품 — 선정팀 카드와 신청서 사이에 보인다. 비워두면(null) 숨김. 2026-11-24 클라이언트 요청.
+  // img 는 public/assets/prizes/ 의 이미지 파일명(배경 없는 PNG). photo: true 면 사진을 칸에 꽉 채운다(호텔).
+  // img 를 비워두면 선 아이콘(icon: watch·hotel·speaker·gift)이 대신 보인다.
+  prizes: {
+    note: '행사 마지막 순서(17:30~)에\n참가자 대상 경품 추첨이 진행됩니다.',
+    items: [
+      { brand: 'SAMSUNG', name: '갤럭시 워치9', count: 1, icon: 'watch', img: 'galaxy-watch9.png?v=3' },
+      { brand: 'LG', name: '엑스붐 블루투스 스피커', count: 2, icon: 'speaker', img: 'lg-xboom.png?v=2' },
+      // stack: true → 같은 카드 이미지 두 장을 겹쳐 보이고, 호버하면 살짝 벌어진다(해비치 멤버십 카드, 공식 사이트 이미지).
+      { brand: 'HYUNDAI', name: '해비치 호텔 숙박·식사권(2인)', count: 2, icon: 'hotel', img: 'haevichi-card.jpg?v=4', stack: true },
+      { brand: 'AMOREPACIFIC', name: '오설록 상품권', count: 10, icon: 'gift', img: 'osulloc-giftcard.png?v=1' },
+    ],
   },
 
   links: [
