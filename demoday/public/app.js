@@ -1,4 +1,4 @@
-import event from '/event.config.js?v=dd10';
+import event from '/event.config.js?v=dd28';
 
 const $ = (s, el = document) => el.querySelector(s);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -64,12 +64,13 @@ function fill() {
   // 선정팀 로고 띠(모바일 전용). 로고마다 비율이 달라 보이는 면적이 비슷해지도록 높이를 개별 계산.
   const logo = (t) => (t.logo ? `<img class="team-logo" src="/assets/teams/${t.logo}?v=3" alt="" data-scale="${t.scale || 1}" />` : '');
   const pill = (t) => `<span>${logo(t)}<em>${t.name}</em></span>`;
-  const half = Math.ceil(event.teams.length / 2);
-  const a = event.teams.slice(0, half).map(pill).join('');
-  const b = event.teams.slice(half).map(pill).join('');
+  const strip = event.heroTeams?.length ? event.heroTeams : event.teams; // 로고 띠: 선정팀 20개사
+  const half = Math.ceil(strip.length / 2);
+  const a = strip.slice(0, half).map(pill).join('');
+  const b = strip.slice(half).map(pill).join('');
   $('#marqueeA').innerHTML = (a + a).repeat(2);
   $('#marqueeB').innerHTML = (b + b).repeat(2);
-  if (!event.teams.length) $('#pioneers').remove();
+  if (!strip.length) $('#pioneers').remove();
   document.querySelectorAll('.team-logo').forEach((img) => {
     const size = () => {
       const ratio = img.naturalWidth / img.naturalHeight || 4;
@@ -108,6 +109,40 @@ function fill() {
     <dl><dt>수집 항목</dt><dd>${pv.items}</dd><dt>수집 목적</dt><dd>${pv.purpose}</dd><dt>보유·이용 기간</dt><dd>${pv.retention}</dd></dl>
     <p>개인정보 수집·이용에 대한 동의를 거부할 권리가 있으나, 동의하지 않을 경우 행사 참가 신청이 제한될 수 있습니다.</p>`;
 
+  if (event.homepage?.href) {
+    $('#homeLink').href = event.homepage.href;
+    $('#homeLinkLabel').textContent = event.homepage.label;
+    $('#homeLink').hidden = false;
+  }
+
+  if (event.prizes?.items?.length) {
+    const ICONS = {
+      watch: '<rect x="7" y="6" width="10" height="12" rx="3"/><path d="M9 6V3h6v3M9 18v3h6v-3M12 10v2.5l1.5 1"/>',
+      hotel: '<path d="M3 19V7M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11.5" r="1.8"/>',
+      speaker: '<rect x="5" y="3" width="14" height="18" rx="4"/><circle cx="12" cy="14" r="3.5"/><circle cx="12" cy="7.5" r="1"/>',
+      gift: '<rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M3 9h18M12 9v11M12 9c-1.5-3-5-4-5-1.5S10 9 12 9c2 0 5 1 5-1.5S13.5 6 12 9"/>',
+    };
+    $('#prizesNote').textContent = event.prizes.note || '';
+    $('#prizesGrid').innerHTML = event.prizes.items
+      .map((p) => `<li class="prize">
+        <div class="prize__media${p.photo ? ' prize__media--photo' : ''}${p.stack ? ' prize__media--stack' : ''}">
+          <i class="prize__spark" aria-hidden="true"></i><i class="prize__spark" aria-hidden="true"></i><i class="prize__spark" aria-hidden="true"></i>${
+          p.img && p.stack
+            ? `<span class="prize__cards"><img class="prize__card prize__card--back" src="/assets/prizes/${p.img}" alt="" loading="lazy" decoding="async" /><img class="prize__card" src="/assets/prizes/${p.img}" alt="" loading="lazy" decoding="async" /></span>`
+            : p.img
+            ? `<img src="/assets/prizes/${p.img}" alt="" loading="lazy" decoding="async" />`
+            : `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[p.icon] || ICONS.gift}</svg>`
+        }</div>
+        <div class="prize__body">
+          <span class="prize__brand">${p.brand}</span>
+          <strong class="prize__name">${p.name}</strong>
+          <span class="prize__count">${p.count}명</span>
+        </div>
+      </li>`)
+      .join('');
+    $('#prizes').hidden = false;
+  }
+
   $('#links').innerHTML = event.links
     .map((l) => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`)
     .join('');
@@ -126,9 +161,9 @@ const HUBS = [
   ['SFO', 37.77, -122.42], ['BOS', 42.36, -71.06], ['NYC', 40.71, -74.0], ['YYZ', 43.65, -79.38],
   ['LON', 51.5, -0.13], ['BER', 52.52, 13.4], ['SIN', 1.35, 103.82], ['TLV', 32.08, 34.78],
 ];
-// 1기 선정팀 20개 로고 — event.config.js 의 teams (public/assets/teams 의 흰색 로고, scale 은 팀별 크기 보정값)
+// 본선 진출 10개팀 로고(2026-11-24부터) — event.config.js 의 teams (public/assets/teams 의 흰색 로고, scale 은 팀별 크기 보정값)
 // 우주 곳곳에서 별처럼 나타나 잠시 떠 있다가, 제각각 서울(한국)을 향해 지구로 뛰어든다.
-const PARTNERS = event.teams.map((t) => {
+const PARTNERS = (event.heroTeams?.length ? event.heroTeams : event.teams).map((t) => {
   const img = new Image();
   img.decoding = 'async';
   img.src = `/assets/teams/${t.logo}?v=3`;
@@ -466,6 +501,11 @@ function createGlobe(canvas, opts = {}) {
         ctx.globalAlpha = state.alpha * TILE_GRAY * appear * a;
         ctx.drawImage(p.img, cx - sw / 2, cy - sh / 2, sw, sh);
       };
+      // 로고가 자리 수 이하면(본선 10개팀) 바꾸지 않고 제자리에 고정
+      if (n <= per) {
+        if (idx < n) drawLogo(PARTNERS[idx], 1);
+        return;
+      }
       drawLogo(PARTNERS[(cycle * per + idx) % n], 1 - mix);
       drawLogo(PARTNERS[((cycle + 1) * per + idx) % n], mix);
     });
@@ -821,7 +861,7 @@ function runTweens(now) {
 
 /* ================= HUD: 서울 시각 · 카운트다운 ================= */
 function startHud() {
-  $('#hudTeams').textContent = `${event.teams.length} PIONEERS`;
+  $('#hudTeams').textContent = `${event.teams.length} FINALISTS`;
   const pad = (n) => String(n).padStart(2, '0');
   const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const target = event.startsAt ? new Date(event.startsAt).getTime() : NaN;

@@ -785,14 +785,12 @@ body::before {
 
 .label { font-family: var(--mono); letter-spacing: 0.16em; color: var(--sky); }
 
-/* 소제목: 양옆 선 대신 눈금자 + 다이아몬드 */
+/* 소제목: 양옆 보라색 선(2026-11-24 클라이언트 요청으로 아래 눈금 세로줄 제거) */
 .section-label, .rsvp h2.section-label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.24em; color: var(--sky); }
 .section-label::before, .section-label::after {
   width: 48px;
-  height: 7px;
-  background:
-    linear-gradient(90deg, transparent, var(--sky)) center / 100% 1px no-repeat,
-    repeating-linear-gradient(90deg, rgba(107, 92, 255, 0.6) 0 1px, transparent 1px 8px) bottom / 100% 4px no-repeat;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sky));
   -webkit-mask-image: linear-gradient(90deg, transparent, #000);
   mask-image: linear-gradient(90deg, transparent, #000);
 }
@@ -902,4 +900,99 @@ input:focus, textarea:focus { border-color: #6f8cff; background: rgba(80, 110, 2
 /* 선정팀 로고 띠는 모바일에서만(PC 는 히어로 지구 양옆에 로고가 있다) */
 @media (min-width: 761px) {
   .pioneers { display: none; }
+}
+
+/* ---------- 상단 KTP 홈페이지 링크 (2026-11-24) ---------- */
+.site-link {
+  position: absolute; z-index: 40; top: 28px; right: 40px;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 14px 0 16px; border-radius: 999px;
+  font: 600 13px/1 var(--sans); letter-spacing: -0.01em; color: var(--ink);
+  text-decoration: none; white-space: nowrap;
+  background: rgba(30, 32, 52, 0.72); border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.8s var(--ease), background 0.25s, border-color 0.25s;
+}
+.site-link[hidden] { display: none; }
+.site-link svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: 0.7; transition: transform 0.25s var(--ease); }
+.is-ready .site-link { opacity: 1; pointer-events: auto; }
+.site-link:hover { background: rgba(48, 44, 96, 0.85); border-color: rgba(130, 115, 255, 0.5); }
+.site-link:hover svg { transform: translate(1px, -1px); }
+.site-link:focus-visible { outline: 2px solid var(--violet-2); outline-offset: 3px; }
+/* 홈페이지 링크가 있으면 HUD 오른쪽 위 좌표(경도·위도)는 숨긴다 — 2026-11-24 요청 */
+body:has(.site-link:not([hidden])) .hud__tr { display: none; }
+@media (max-width: 760px) {
+  .site-link { top: 14px; right: 14px; height: 30px; padding: 0 11px 0 13px; font-size: 12px; }
+}
+
+/* ---------- 참가자 경품 (2026-11-24) ---------- */
+.prizes { width: min(1040px, calc(100% - 40px)) !important; margin: 0 auto clamp(64px, 8vw, 96px); }
+.prizes[hidden] { display: none; }
+.prizes h2.section-label { margin: 0; font: 500 12px/1.4 var(--mono); letter-spacing: 0.24em; color: var(--sky); }
+.prizes__title { margin: 12px 0 10px; font: 600 clamp(24px, 3vw, 32px)/1.2 var(--sans); color: #fff; }
+.prizes .lead { word-break: keep-all; white-space: pre-line; }
+.prizes__grid { list-style: none; margin: clamp(24px, 3.5vw, 36px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.prize { display: flex; flex-direction: column; text-align: center; }
+.prize__media {
+  position: relative; aspect-ratio: 4 / 3; display: grid; place-items: center; border-bottom: 1px solid var(--line);
+  overflow: visible; border-bottom: 0; isolation: isolate;
+  /* 상품 뒤 후광: 흰 코어 + 보라 헤일로 (2026-11-24 "더 빛나게") */
+  background:
+    radial-gradient(30% 34% at 50% 50%, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0) 70%),
+    radial-gradient(52% 56% at 50% 52%, rgba(150, 130, 255, 0.32), rgba(110, 90, 255, 0.08) 60%, transparent 78%);
+}
+/* 바닥 반사광 */
+.prize__media::after {
+  content: ''; position: absolute; z-index: -1; left: 50%; bottom: 6%; width: 62%; height: 12%; translate: -50% 0;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(200, 190, 255, 0.45), rgba(120, 100, 255, 0.12) 60%, transparent 75%);
+  filter: blur(4px); pointer-events: none;
+}
+.prize__media img {
+  filter: drop-shadow(0 0 22px rgba(190, 175, 255, 0.45)) drop-shadow(0 16px 18px rgba(0, 0, 0, 0.55)) brightness(1.06) saturate(1.08);
+  animation: prize-float 4.2s ease-in-out infinite alternate;
+}
+.prize:nth-child(2) .prize__media img { animation-delay: -1.1s; }
+.prize:nth-child(3) .prize__media img { animation-delay: -2.2s; }
+.prize:nth-child(4) .prize__media img { animation-delay: -3.3s; }
+@keyframes prize-float { from { translate: 0 4px; } to { translate: 0 -6px; } }
+/* 반짝이 */
+.prize__spark { position: absolute; z-index: 2; width: 14px; height: 14px; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle, #fff 0 1.5px, transparent 2.5px), linear-gradient(90deg, transparent 45%, rgba(255,255,255,0.95) 50%, transparent 55%), linear-gradient(0deg, transparent 45%, rgba(255,255,255,0.95) 50%, transparent 55%);
+  filter: drop-shadow(0 0 4px rgba(210, 200, 255, 0.95));
+  animation: prize-twinkle 2.8s ease-in-out infinite; }
+.prize__spark:nth-of-type(1) { top: 16%; left: 22%; }
+.prize__spark:nth-of-type(2) { top: 30%; right: 18%; width: 10px; height: 10px; animation-delay: 0.9s; }
+.prize__spark:nth-of-type(3) { bottom: 22%; left: 30%; width: 9px; height: 9px; animation-delay: 1.8s; }
+.prize:nth-child(even) .prize__spark { animation-delay: 1.4s; }
+@keyframes prize-twinkle { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .prize__media img, .prize__spark { animation: none; }
+  .prize__spark { opacity: 0.7; }
+}
+.prize__media:has(svg) { background: radial-gradient(60% 70% at 50% 55%, rgba(107, 92, 255, 0.22), transparent 70%), rgba(255, 255, 255, 0.02); }
+.prize__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 9%; box-sizing: border-box; transition: transform 0.5s var(--ease); }
+.prize:hover .prize__media img { transform: scale(1.06); }
+.prize__media svg { width: 34%; fill: none; stroke: #b6adff; stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; }
+.prize__body { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 8px 0; }
+.prize__brand { font: 500 12px/1.3 var(--sans); letter-spacing: 0.02em; color: var(--ink-3); }
+.prize__name { font: 600 15px/1.4 var(--sans); color: #fff; word-break: keep-all; text-wrap: balance; }
+.prize__count { margin-top: auto; padding-top: 4px; font: 600 15px/1.3 var(--sans); color: var(--violet-2); }
+
+/* 해비치 — 카드 두 장 겹침, 호버하면 벌어짐 (해비치 멤버십 페이지 느낌) */
+.prize__cards { position: absolute; inset: 0; display: grid; place-items: center; }
+.prize__media .prize__card {
+  position: absolute; inset: auto; width: 64%; height: auto; aspect-ratio: 540 / 320; padding: 0; object-fit: cover;
+  border-radius: 9px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+  transition: transform 0.5s var(--ease), filter 0.5s var(--ease);
+  transform: translate(3%, 2%) rotate(3deg);
+}
+.prize__media .prize__card--back { filter: brightness(0.72) saturate(0.95) drop-shadow(0 12px 16px rgba(0, 0, 0, 0.5)); transform: translate(-6%, -7%) rotate(-5deg); }
+.prize:hover .prize__media .prize__card { transform: translate(9%, 5%) rotate(6deg); }
+.prize:hover .prize__media .prize__card--back { transform: translate(-13%, -11%) rotate(-10deg); }
+@media (max-width: 760px) {
+  .prizes { width: calc(100% - 32px) !important; }
+  .prizes__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .prize__body { padding: 4px 4px 0; }
+  .prize__name { font-size: 14.5px; }
 }

@@ -19,10 +19,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=panchang@500,600,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
-  <link rel="stylesheet" href="/styles.css?v=dd11" />
+  <link rel="stylesheet" href="/styles.css?v=dd22" />
 </head>
 <body class="is-intro">
   <canvas id="stars" aria-hidden="true"></canvas>
+  <a class="site-link" id="homeLink" href="#" target="_blank" rel="noopener" hidden>
+    <span id="homeLinkLabel"></span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 16 16 8M9 8h7v7" /></svg>
+    <span class="sr-only">(새 창)</span>
+  </a>
 
   <!-- ===== HERO ===== -->
   <header class="hero" id="top">
@@ -32,7 +37,7 @@
       <div class="hud__tl"><span>KTP-26</span><span>MISSION · DEMO DAY</span></div>
       <div class="hud__tr"><span>37.5665° N</span><span>126.9780° E</span></div>
       <div class="hud__bl"><span class="hud__live">LIVE</span><span id="hudClock">SEL --:--:--</span></div>
-      <div class="hud__br"><span id="hudTeams">20 PIONEERS</span><span>GLOBAL → KOREA</span></div>
+      <div class="hud__br"><span id="hudTeams">10 FINALISTS</span><span>GLOBAL → KOREA</span></div>
     </div>
 
     <div class="hero__inner">
@@ -106,6 +111,16 @@
     <section class="pioneers reveal" id="pioneers">
       <div class="marquee" aria-hidden="true"><div class="marquee__track" id="marqueeA"></div></div>
       <div class="marquee marquee--rev" aria-hidden="true"><div class="marquee__track" id="marqueeB"></div></div>
+    </section>
+
+    <!-- ===== PRIZES (참가자 경품) ===== -->
+    <section class="prizes reveal" id="prizes" aria-labelledby="prizesTitle" hidden>
+      <div class="block__head block__head--center">
+        <h2 class="section-label" id="prizesTitle">Lucky Draw</h2>
+        <p class="prizes__title">참가자 경품</p>
+        <p class="lead" id="prizesNote"></p>
+      </div>
+      <ul class="prizes__grid" id="prizesGrid"></ul>
     </section>
 
     <!-- ===== RSVP FORM ===== -->
@@ -262,7 +277,7 @@
     </div>
   </div>
 
-  <script type="module" src="/app.js?v=dd16"></script>
-  <script type="module" src="/finalists.js?v=dd3"></script>
+  <script type="module" src="/app.js?v=dd34"></script>
+  <script type="module" src="/finalists.js?v=dd20"></script>
 </body>
 </html>
