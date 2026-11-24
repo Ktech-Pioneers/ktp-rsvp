@@ -785,14 +785,12 @@ body::before {
 
 .label { font-family: var(--mono); letter-spacing: 0.16em; color: var(--sky); }
 
-/* 소제목: 양옆 선 대신 눈금자 + 다이아몬드 */
+/* 소제목: 양옆 보라색 선(2026-11-24 클라이언트 요청으로 아래 눈금 세로줄 제거) */
 .section-label, .rsvp h2.section-label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.24em; color: var(--sky); }
 .section-label::before, .section-label::after {
   width: 48px;
-  height: 7px;
-  background:
-    linear-gradient(90deg, transparent, var(--sky)) center / 100% 1px no-repeat,
-    repeating-linear-gradient(90deg, rgba(107, 92, 255, 0.6) 0 1px, transparent 1px 8px) bottom / 100% 4px no-repeat;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sky));
   -webkit-mask-image: linear-gradient(90deg, transparent, #000);
   mask-image: linear-gradient(90deg, transparent, #000);
 }
