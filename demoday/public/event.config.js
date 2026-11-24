@@ -143,6 +143,9 @@ export default {
     retention: '행사 종료 및 관련 운영 업무 완료 후 파기',
   },
 
+  // 상단 오른쪽 작은 링크(KTP 홈페이지). 비워두면(null) 숨김. 2026-11-24 클라이언트 요청.
+  homepage: { label: 'KTP 홈페이지', href: 'https://ktechpioneers.com/' },
+
   links: [
     { label: 'LinkedIn', href: 'https://www.linkedin.com/showcase/k-tech-pioneers/' },
     { label: 'Instagram', href: 'https://www.instagram.com/ktechpioneers/' },

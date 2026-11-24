@@ -109,6 +109,12 @@ function fill() {
     <dl><dt>수집 항목</dt><dd>${pv.items}</dd><dt>수집 목적</dt><dd>${pv.purpose}</dd><dt>보유·이용 기간</dt><dd>${pv.retention}</dd></dl>
     <p>개인정보 수집·이용에 대한 동의를 거부할 권리가 있으나, 동의하지 않을 경우 행사 참가 신청이 제한될 수 있습니다.</p>`;
 
+  if (event.homepage?.href) {
+    $('#homeLink').href = event.homepage.href;
+    $('#homeLinkLabel').textContent = event.homepage.label;
+    $('#homeLink').hidden = false;
+  }
+
   $('#links').innerHTML = event.links
     .map((l) => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`)
     .join('');

@@ -903,3 +903,27 @@ input:focus, textarea:focus { border-color: #6f8cff; background: rgba(80, 110, 2
 @media (min-width: 761px) {
   .pioneers { display: none; }
 }
+
+/* ---------- 상단 KTP 홈페이지 링크 (2026-11-24) ---------- */
+.site-link {
+  position: absolute; z-index: 40; top: 28px; right: 40px;
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 14px 0 16px; border-radius: 999px;
+  font: 600 13px/1 var(--sans); letter-spacing: -0.01em; color: var(--ink);
+  text-decoration: none; white-space: nowrap;
+  background: rgba(30, 32, 52, 0.72); border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.8s var(--ease), background 0.25s, border-color 0.25s;
+}
+.site-link[hidden] { display: none; }
+.site-link svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: 0.7; transition: transform 0.25s var(--ease); }
+.is-ready .site-link { opacity: 1; pointer-events: auto; }
+.site-link:hover { background: rgba(48, 44, 96, 0.85); border-color: rgba(130, 115, 255, 0.5); }
+.site-link:hover svg { transform: translate(1px, -1px); }
+.site-link:focus-visible { outline: 2px solid var(--violet-2); outline-offset: 3px; }
+/* 홈페이지 링크가 있으면 HUD 오른쪽 위 좌표(경도·위도)는 숨긴다 — 2026-11-24 요청 */
+body:has(.site-link:not([hidden])) .hud__tr { display: none; }
+@media (max-width: 760px) {
+  .site-link { top: 14px; right: 14px; height: 30px; padding: 0 11px 0 13px; font-size: 12px; }
+}
