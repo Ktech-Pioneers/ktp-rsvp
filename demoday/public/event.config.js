@@ -97,7 +97,7 @@ export default {
     { name: 'Linqalpha', logo: 'linqalpha.png', scale: 0.95 },
     { name: 'Pinta AI', logo: 'pinta-ai.png' },
     { name: 'BizCrush', logo: 'bizcrush.png' },
-    { name: 'SkinSeoulLab', logo: 'skinseoullab.png', scale: 1.2 },
+    { name: 'Skinseoul Lab', logo: 'skinseoullab.png', scale: 1.2 },
     { name: 'Storika', logo: 'storika.png', scale: 0.88 },
     { name: 'Trxbx', logo: 'trxbx.png' },
     { name: 'aix', logo: 'aix.png', scale: 0.82 },
@@ -105,10 +105,10 @@ export default {
     { name: 'KINZ', logo: 'kinz.png', scale: 0.8 },
     { name: 'SERiD AI', logo: 'serid-ai.png', scale: 1.2 },
     { name: 'Pen-AI SMT', logo: 'pen-ai-smt.png', scale: 1.35 },
-    { name: 'K-ATR', logo: 'roblossom.png', scale: 1.3 },
+    { name: 'Roblossom', logo: 'roblossom.png', scale: 1.3 },
     { name: 'iQ Surgical', logo: 'iq-surgical.png', scale: 0.62 },
     { name: 'Celuragen Therapeutics', logo: 'celuragen.png', scale: 1.3 },
-    { name: 'CyrenCare', logo: 'cyrencare.png' },
+    { name: 'CyrenConnect', logo: 'cyrencare.png' },
   ],
   // 로고 띠 아래 버튼. 비워두면 숨김.
   // 선정팀 상세를 사이트 안에서 보여주게 되어 노션 버튼은 뺐다(2026-10-28).

@@ -176,7 +176,7 @@ addEventListener('keydown', (e) => e.key === 'Escape' && !view.hidden && close()
 addEventListener('hashchange', sync);
 addEventListener('popstate', sync);
 
-fetch('/assets/notion/teams.json?v=3')
+fetch('/assets/notion/teams.json?v=4')
   .then((r) => r.json())
   .then((data) => {
     const bySlug = Object.fromEntries(data.map((t) => [t.slug, t]));
