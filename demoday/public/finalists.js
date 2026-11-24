@@ -2,7 +2,7 @@
 // 데이터(assets/notion/teams.json)와 이미지는 노션에서 가져와 만든다. 노션 내용이 바뀌면 다시 만들어야 한다.
 // 카드를 누르면 주소가 #team/<slug> 로 바뀌고 상세 창이 열린다(뒤로 가기로 닫힘, 링크 공유 가능).
 
-import event from '/event.config.js';
+import event from '/event.config.js?v=dd28';
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);

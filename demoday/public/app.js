@@ -1,4 +1,4 @@
-import event from '/event.config.js?v=dd10';
+import event from '/event.config.js?v=dd28';
 
 const $ = (s, el = document) => el.querySelector(s);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
