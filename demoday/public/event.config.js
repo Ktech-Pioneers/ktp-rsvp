@@ -80,7 +80,7 @@ export default {
     { name: 'SECA', logo: 'seca.png', scale: 1.05 },
     { name: 'Linqalpha', logo: 'linqalpha.png', scale: 0.95 },
     { name: 'Pinta AI', logo: 'pinta-ai.png' },
-    { name: 'CyrenConnect', logo: 'cyrencare.png' },
+    { name: 'CyrenConnect', logo: 'cyrenconnect.png' },
     { name: 'iQ Surgical', logo: 'iq-surgical.png', scale: 0.62 },
     { name: 'Roblossom', logo: 'roblossom.png', scale: 1.3 },
     { name: 'Skinseoul Lab', logo: 'skinseoullab.png', scale: 1.2 },
@@ -108,7 +108,7 @@ export default {
     { name: 'Roblossom', logo: 'roblossom.png', scale: 1.3 },
     { name: 'iQ Surgical', logo: 'iq-surgical.png', scale: 0.62 },
     { name: 'Celuragen Therapeutics', logo: 'celuragen.png', scale: 1.3 },
-    { name: 'CyrenConnect', logo: 'cyrencare.png' },
+    { name: 'CyrenConnect', logo: 'cyrenconnect.png' },
   ],
   // 로고 띠 아래 버튼. 비워두면 숨김.
   // 선정팀 상세를 사이트 안에서 보여주게 되어 노션 버튼은 뺐다(2026-10-28).
