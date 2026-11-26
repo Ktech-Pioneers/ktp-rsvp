@@ -6,6 +6,7 @@
 |---|---|---|
 | [`pre-demoday/`](pre-demoday) | PRE-DEMO DAY · 2026.11.23 COEX Startup Branch | https://ktp-rsvp.vercel.app |
 | [`demoday/`](demoday) | DEMO DAY · 2026.12.10 그랜드 머큐어 임피리얼 팰리스 서울 강남 | https://ktp-demoday-test.vercel.app (테스트) |
+| [`demoday-ecosystem/`](demoday-ecosystem) | DEMO DAY 창업생태계 담당자용(화면은 `demoday/`와 같고 응답·시트만 따로) | https://ktp-demoday-rsvp-ecosystem.vercel.app |
 
 ## 구조
 - `public/` — 페이지(`index.html`, `app.js`, `styles.css`), 선정팀 카드·상세(`finalists.js`), 관리자 페이지(`admin/`)
